@@ -8,6 +8,7 @@ import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveMealData } from '@/lib/storage';
 import { MealData } from '@/lib/types';
+import { Utensils } from 'lucide-react';
 
 const FoodTracker = () => {
   const navigate = useNavigate();
@@ -49,46 +50,56 @@ const FoodTracker = () => {
       <Header title="Daily Food Tracker" showBackButton />
       
       <div className="px-5">
-        <div className="mb-4">
-          <label htmlFor="mealTitle" className="label-text block mb-2">
-            Meal Title
-          </label>
-          <input
-            id="mealTitle"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="input-field"
-            placeholder="Enter meal title"
-          />
+        <div className="flex justify-center mb-6">
+          <div className="bg-gradient-to-r from-green-400 to-blue-400 p-3 rounded-full">
+            <Utensils className="h-10 w-10 text-white" />
+          </div>
         </div>
         
-        <div className="mb-4">
-          <label htmlFor="mealDescription" className="label-text block mb-2">
-            Meal Description
-          </label>
-          <textarea
-            id="mealDescription"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="input-field h-32"
-            placeholder="Enter meal details"
-          />
-        </div>
-        
-        <TimeSelector
-          label="Meal Time:"
-          value={mealTime}
-          onChange={setMealTime}
-        />
-        
-        <button
-          className="btn-primary w-full mt-4"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Adding...' : 'Add Meal'}
-        </button>
+        <Card className="p-6 mb-6 shadow-lg bg-gradient-to-br from-white to-blue-50 border-none">
+          <div className="mb-4">
+            <label htmlFor="mealTitle" className="label-text block mb-2 font-medium">
+              Meal Title
+            </label>
+            <input
+              id="mealTitle"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="input-field focus:ring-green-400/30 transition-all duration-300"
+              placeholder="Enter meal title"
+            />
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="mealDescription" className="label-text block mb-2 font-medium">
+              Meal Description
+            </label>
+            <textarea
+              id="mealDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="input-field h-32 focus:ring-green-400/30 transition-all duration-300"
+              placeholder="Enter meal details"
+            />
+          </div>
+          
+          <div className="bg-white/50 p-4 rounded-lg mb-4">
+            <TimeSelector
+              label="Meal Time:"
+              value={mealTime}
+              onChange={setMealTime}
+            />
+          </div>
+          
+          <button
+            className="bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:opacity-90 transition-all duration-200 w-full"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Adding...' : 'Add Meal'}
+          </button>
+        </Card>
       </div>
     </div>
   );

@@ -9,9 +9,10 @@ import {
   importData, 
   clearAllStorage,
   getLastBackupDate,
-  setLastBackupDate
+  setLastBackupDate,
+  exportDataAsText
 } from '@/lib/storage';
-import { Download, Upload, Trash2, RefreshCw } from 'lucide-react';
+import { Download, Upload, Trash2, RefreshCw, FileText } from 'lucide-react';
 
 const Storage = () => {
   const [storageSize, setStorageSize] = useState('Calculating...');
@@ -66,6 +67,25 @@ const Storage = () => {
     } catch (error) {
       console.error('Error exporting data:', error);
       toast.error('Failed to export data');
+    }
+  };
+  
+  const handleExportReadableData = () => {
+    try {
+      const textData = exportDataAsText();
+      const dataUri = 'data:text/plain;charset=utf-8,'+ encodeURIComponent(textData);
+      
+      const exportFileDefaultName = `wellness_report_${new Date().toISOString().slice(0, 10)}.txt`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      
+      toast.success('Human-readable report created successfully');
+    } catch (error) {
+      console.error('Error exporting readable data:', error);
+      toast.error('Failed to create human-readable report');
     }
   };
   
@@ -127,7 +147,7 @@ const Storage = () => {
       <div className="px-5">
         <div className="grid gap-4">
           <button
-            className="bg-app-blue text-white py-3 px-6 rounded-lg font-medium hover:bg-app-blue/90 active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
+            className="bg-gradient-to-r from-app-blue to-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
             onClick={handleCreateBackup}
           >
             <Download className="mr-2 h-5 w-5" />
@@ -135,15 +155,23 @@ const Storage = () => {
           </button>
           
           <button
-            className="bg-app-blue text-white py-3 px-6 rounded-lg font-medium hover:bg-app-blue/90 active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
+            className="bg-gradient-to-r from-app-blue to-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
             onClick={handleExportData}
           >
             <Download className="mr-2 h-5 w-5" />
-            Export Data
+            Export Raw Data
           </button>
           
           <button
-            className="bg-app-blue text-white py-3 px-6 rounded-lg font-medium hover:bg-app-blue/90 active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-purple-600 transition-all duration-200 flex items-center justify-center"
+            onClick={handleExportReadableData}
+          >
+            <FileText className="mr-2 h-5 w-5" />
+            Export Readable Report
+          </button>
+          
+          <button
+            className="bg-gradient-to-r from-app-blue to-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
             onClick={handleImportData}
           >
             <Upload className="mr-2 h-5 w-5" />
@@ -151,7 +179,7 @@ const Storage = () => {
           </button>
           
           <button
-            className="bg-app-blue text-white py-3 px-6 rounded-lg font-medium hover:bg-app-blue/90 active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
+            className="bg-gradient-to-r from-red-500 to-orange-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-red-600 transition-all duration-200 flex items-center justify-center"
             onClick={handleClearStorage}
           >
             <Trash2 className="mr-2 h-5 w-5" />
@@ -173,12 +201,12 @@ const Storage = () => {
             </button>
           </div>
           
-          <Card className="bg-app-lightGray border border-gray-100">
-            <div className="py-2">
-              <div className="text-lg text-app-darkGray">Storage Usage: {storageSize}</div>
+          <Card className="bg-gradient-to-br from-app-lightGray to-blue-50 border border-gray-100 shadow-md">
+            <div className="p-4">
+              <div className="text-lg text-app-darkGray font-medium">Storage Usage: <span className="text-app-blue">{storageSize}</span></div>
             </div>
-            <div className="py-2">
-              <div className="text-lg text-app-darkGray">Last Backup: {lastBackup}</div>
+            <div className="p-4 border-t border-gray-100">
+              <div className="text-lg text-app-darkGray font-medium">Last Backup: <span className="text-app-blue">{lastBackup}</span></div>
             </div>
           </Card>
         </div>
