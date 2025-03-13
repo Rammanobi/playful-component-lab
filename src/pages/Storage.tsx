@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { 
   getStorageSize, 
   createBackup, 

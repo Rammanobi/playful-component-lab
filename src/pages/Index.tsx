@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Moon, Utensils, Heart, Sparkles, FileText, Database } from 'lucide-react';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 
 const Index = () => {
   return (

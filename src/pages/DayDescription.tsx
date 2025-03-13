@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveDayDescription, getTodayData, getDayDescriptions } from '@/lib/storage';
 import { DayDescription as DayDescriptionType } from '@/lib/types';

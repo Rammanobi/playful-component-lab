@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveMealData } from '@/lib/storage';
