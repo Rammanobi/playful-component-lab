@@ -1,4 +1,3 @@
-
 import { 
   SleepData, 
   MealData, 
@@ -174,9 +173,8 @@ export const exportDataAsText = (): string => {
       
       stressLogs.forEach(entry => {
         report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
+        report += `Time: ${entry.timestamp ? formatTimeForDisplay(entry.timestamp) : 'Not recorded'}\n`;
         report += `Stress Level: ${entry.rating}/5\n`;
-        report += `Morning Check-in: ${formatTimeForDisplay(entry.morningCheckIn)}\n`;
-        report += `Evening Review: ${formatTimeForDisplay(entry.eveningReview)}\n`;
         if (entry.notes) {
           report += `Notes: ${entry.notes}\n`;
         }

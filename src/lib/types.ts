@@ -20,8 +20,7 @@ export interface StressLog {
   date: string;
   rating: number;
   notes: string;
-  morningCheckIn: string;
-  eveningReview: string;
+  timestamp: string;
 }
 
 export interface SkincareRoutine {

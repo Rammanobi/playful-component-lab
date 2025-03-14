@@ -5,7 +5,6 @@ import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
 import { Card } from '@/components/ui/card';
 import Rating from '@/components/ui/Rating';
-import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveStressLog, getTodayData, getStressLogs } from '@/lib/storage';
 import { StressLog } from '@/lib/types';
@@ -13,8 +12,6 @@ import { Heart } from 'lucide-react';
 
 const StressManagement = () => {
   const navigate = useNavigate();
-  const [morningCheckIn, setMorningCheckIn] = useState('08:00');
-  const [eveningReview, setEveningReview] = useState('21:00');
   const [rating, setRating] = useState(3);
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,8 +20,6 @@ const StressManagement = () => {
   useEffect(() => {
     const todayData = getTodayData<StressLog>(getStressLogs);
     if (todayData) {
-      setMorningCheckIn(todayData.morningCheckIn);
-      setEveningReview(todayData.eveningReview);
       setRating(todayData.rating);
       setNotes(todayData.notes);
     }
@@ -34,13 +29,18 @@ const StressManagement = () => {
     setIsSubmitting(true);
     
     try {
+      // Get current time in HH:MM format
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const currentTime = `${hours}:${minutes}`;
+      
       const stressLog: StressLog = {
         id: generateId(),
         date: getCurrentDate(),
         rating,
         notes,
-        morningCheckIn,
-        eveningReview
+        timestamp: currentTime
       };
       
       await saveStressLog(stressLog);
@@ -66,20 +66,15 @@ const StressManagement = () => {
         </div>
         
         <Card className="p-6 mb-6 shadow-lg bg-gradient-to-br from-white to-purple-50 border-none">
-          <div className="bg-white/50 p-4 rounded-lg mb-4">
-            <TimeSelector
-              label="Morning Check-in:"
-              value={morningCheckIn}
-              onChange={setMorningCheckIn}
-            />
-          </div>
-          
-          <div className="bg-white/50 p-4 rounded-lg mb-4">
-            <TimeSelector
-              label="Evening Review:"
-              value={eveningReview}
-              onChange={setEveningReview}
-            />
+          <div className="bg-white/50 p-4 rounded-lg mb-6">
+            <div className="text-center mb-2">
+              <p className="text-gray-600 font-medium">
+                Your stress log will be saved with the current time
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Time is automatically recorded when you save
+              </p>
+            </div>
           </div>
           
           <div className="mb-6 bg-white/50 p-4 rounded-lg">
