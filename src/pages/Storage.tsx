@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
 import { Card } from '@/components/ui/card';
+import ReadableReport from '@/components/reports/ReadableReport';
 import { 
   getStorageSize, 
   createBackup, 
@@ -12,12 +12,13 @@ import {
   setLastBackupDate,
   exportDataAsText
 } from '@/lib/storage';
-import { Download, Upload, Trash2, RefreshCw, FileText } from 'lucide-react';
+import { Download, Upload, Trash2, RefreshCw, FileText, Eye } from 'lucide-react';
 
 const Storage = () => {
   const [storageSize, setStorageSize] = useState('Calculating...');
   const [lastBackup, setLastBackup] = useState('Never');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   
   useEffect(() => {
     updateStorageInfo();
@@ -26,6 +27,10 @@ const Storage = () => {
   const updateStorageInfo = () => {
     setStorageSize(getStorageSize());
     setLastBackup(getLastBackupDate());
+  };
+  
+  const handleViewReport = () => {
+    setShowReport(true);
   };
   
   const handleCreateBackup = () => {
@@ -171,6 +176,14 @@ const Storage = () => {
           </button>
           
           <button
+            className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-indigo-600 transition-all duration-200 flex items-center justify-center"
+            onClick={handleViewReport}
+          >
+            <Eye className="mr-2 h-5 w-5" />
+            View Readable Report
+          </button>
+          
+          <button
             className="bg-gradient-to-r from-app-blue to-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg active:bg-app-blue/80 transition-all duration-200 flex items-center justify-center"
             onClick={handleImportData}
           >
@@ -211,6 +224,8 @@ const Storage = () => {
           </Card>
         </div>
       </div>
+      
+      {showReport && <ReadableReport onClose={() => setShowReport(false)} />}
     </div>
   );
 };
