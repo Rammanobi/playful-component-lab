@@ -5,6 +5,7 @@ export interface SleepData {
   hoursSlept: number;
   quality: string;
   morningReminder: string;
+  timestamp: string;
 }
 
 export interface MealData {
@@ -13,6 +14,7 @@ export interface MealData {
   title: string;
   description: string;
   time: string;
+  timestamp: string;
 }
 
 export interface StressLog {
@@ -31,12 +33,14 @@ export interface SkincareRoutine {
   serum2: boolean;
   sunscreen: boolean;
   moisturizer: boolean;
+  timestamp: string;
 }
 
 export interface DayDescription {
   id: string;
   date: string;
   description: string;
+  timestamp: string;
 }
 
 export type StorageKeys = 

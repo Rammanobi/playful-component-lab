@@ -41,10 +41,17 @@ const DayDescription = () => {
     setIsSubmitting(true);
     
     try {
+      // Get current time in HH:MM format
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const currentTime = `${hours}:${minutes}`;
+      
       const dayData: DayDescriptionType = {
         id: generateId(),
         date: getCurrentDate(),
-        description
+        description,
+        timestamp: currentTime
       };
       
       await saveDayDescription(dayData);
@@ -85,6 +92,17 @@ const DayDescription = () => {
           />
         </div>
         
+        <div className="bg-white/50 p-4 rounded-lg mb-4">
+          <div className="text-center mb-2">
+            <p className="text-gray-600 font-medium">
+              Your day description will be saved with the current time
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Time is automatically recorded when you save
+            </p>
+          </div>
+        </div>
+        
         <button
           className="btn-primary w-full mt-4"
           onClick={handleSubmit}
@@ -111,7 +129,7 @@ const DayDescription = () => {
             <Card>
               <p className="text-app-darkGray whitespace-pre-wrap">{todayData.description}</p>
               <div className="text-sm text-app-lightText mt-4">
-                Saved on: {new Date(todayData.date).toLocaleDateString()}
+                Saved on: {new Date(todayData.date).toLocaleDateString()} at {todayData.timestamp || 'unknown time'}
               </div>
             </Card>
           ) : (

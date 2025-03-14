@@ -35,6 +35,12 @@ const SkinCare = () => {
     setIsSubmitting(true);
     
     try {
+      // Get current time in HH:MM format
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const currentTime = `${hours}:${minutes}`;
+      
       const skincareData: SkincareRoutine = {
         id: generateId(),
         date: getCurrentDate(),
@@ -42,7 +48,8 @@ const SkinCare = () => {
         serum1,
         serum2,
         sunscreen,
-        moisturizer
+        moisturizer,
+        timestamp: currentTime
       };
       
       await saveSkincareRoutine(skincareData);
@@ -123,6 +130,17 @@ const SkinCare = () => {
             onChange={setMoisturizer} 
           />
         </Card>
+        
+        <div className="bg-white/50 p-4 rounded-lg my-4">
+          <div className="text-center mb-2">
+            <p className="text-gray-600 font-medium">
+              Your skincare routine will be saved with the current time
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Time is automatically recorded when you save
+            </p>
+          </div>
+        </div>
         
         <button
           className="btn-primary w-full mt-4"

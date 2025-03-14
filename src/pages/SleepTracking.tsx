@@ -37,12 +37,19 @@ const SleepTracking = () => {
     setIsSubmitting(true);
     
     try {
+      // Get current time in HH:MM format
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const currentTime = `${hours}:${minutes}`;
+      
       const sleepData: SleepData = {
         id: generateId(),
         date: getCurrentDate(),
         hoursSlept: parseFloat(hoursSlept),
         quality,
-        morningReminder
+        morningReminder,
+        timestamp: currentTime
       };
       
       await saveSleepData(sleepData);
@@ -103,6 +110,17 @@ const SleepTracking = () => {
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+        
+        <div className="bg-white/50 p-4 rounded-lg mb-6">
+          <div className="text-center mb-2">
+            <p className="text-gray-600 font-medium">
+              Your sleep data will be saved with the current time
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Time is automatically recorded when you save
+            </p>
           </div>
         </div>
         
