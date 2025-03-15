@@ -12,6 +12,7 @@ import StressManagement from "./pages/StressManagement";
 import SkinCare from "./pages/SkinCare";
 import DayDescription from "./pages/DayDescription";
 import Storage from "./pages/Storage";
+import LogDetails from "./pages/LogDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/skincare" element={<SkinCare />} />
           <Route path="/day" element={<DayDescription />} />
           <Route path="/storage" element={<Storage />} />
+          <Route path="/logs/:type?" element={<LogDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

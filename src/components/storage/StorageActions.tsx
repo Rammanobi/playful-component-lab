@@ -13,7 +13,9 @@ interface StorageActionsProps {
 
 const StorageActions: React.FC<StorageActionsProps> = (props) => {
   return (
-    <StorageActionButtons {...props} />
+    <div className="space-y-6">
+      <StorageActionButtons {...props} />
+    </div>
   );
 };
 

@@ -15,3 +15,14 @@ export const importData = (data: Record<string, any>): boolean => {
     return false;
   }
 };
+
+// Helper function to update a specific record
+export const updateRecord = (storageKey: string, newData: any[]): boolean => {
+  try {
+    safeStorage.set(storageKey, newData);
+    return true;
+  } catch (e) {
+    console.error(`Error updating ${storageKey}:`, e);
+    return false;
+  }
+};
