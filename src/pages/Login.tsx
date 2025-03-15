@@ -61,6 +61,14 @@ const Login = () => {
         
         setTimeout(() => navigate('/'), 1000);
       } else {
+        // Check if email already exists for registration
+        const existingUser = getUserCredentials();
+        if (existingUser && existingUser.email === values.email) {
+          toast.error("An account with this email already exists");
+          setIsLoading(false);
+          return;
+        }
+        
         // Handle registration
         await saveUserCredentials({
           email: values.email,
