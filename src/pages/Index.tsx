@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Moon, Utensils, Heart, Sparkles, FileText, Database } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import UserProfile from '@/components/auth/UserProfile';
 
 const Index = () => {
   return (
@@ -9,6 +11,8 @@ const Index = () => {
       <h1 className="text-4xl font-medium text-app-darkGray pt-8 pb-6">
         Wellness Tracker
       </h1>
+      
+      <UserProfile />
       
       <div className="grid grid-cols-2 gap-4">
         <Link to="/sleep" className="transform transition-all duration-300 hover:scale-105">
