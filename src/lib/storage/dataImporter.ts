@@ -1,5 +1,6 @@
 
 import { safeStorage } from './utils';
+import { StorageKeys } from '../types';
 
 export const importData = (data: Record<string, any>): boolean => {
   try {
@@ -17,7 +18,7 @@ export const importData = (data: Record<string, any>): boolean => {
 };
 
 // Helper function to update a specific record
-export const updateRecord = (storageKey: string, newData: any[]): boolean => {
+export const updateRecord = (storageKey: StorageKeys, newData: any[]): boolean => {
   try {
     safeStorage.set(storageKey, newData);
     return true;
