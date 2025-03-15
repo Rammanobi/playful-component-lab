@@ -8,7 +8,7 @@ export interface UserCredentials {
 
 export const saveUserCredentials = (credentials: UserCredentials): boolean => {
   try {
-    safeStorage.set('userCredentials', credentials);
+    localStorage.setItem('userCredentials', JSON.stringify(credentials));
     return true;
   } catch (e) {
     console.error('Error saving user credentials:', e);
@@ -18,7 +18,9 @@ export const saveUserCredentials = (credentials: UserCredentials): boolean => {
 
 export const getUserCredentials = (): UserCredentials | null => {
   try {
-    return safeStorage.get('userCredentials');
+    const credentialsStr = localStorage.getItem('userCredentials');
+    if (!credentialsStr) return null;
+    return JSON.parse(credentialsStr) as UserCredentials;
   } catch (e) {
     console.error('Error getting user credentials:', e);
     return null;
