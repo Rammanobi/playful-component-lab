@@ -9,14 +9,9 @@ import { Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { getUserCredentials } from '@/lib/storage/auth';
+import FormFieldWithIcon from './FormFieldWithIcon';
 
 export const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -73,38 +68,21 @@ const LoginForm = ({ setIsLogin, setIsForgotPassword }: LoginFormProps) => {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input placeholder="your@email.com" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email"
+            placeholder="your@email.com"
+            Icon={Mail}
           />
           
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input type="password" placeholder="••••••" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Password"
+            placeholder="••••••"
+            type="password"
+            Icon={Lock}
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
