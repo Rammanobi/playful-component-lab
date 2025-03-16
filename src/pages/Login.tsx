@@ -132,8 +132,12 @@ const Login = () => {
       setResetEmail(values.email);
       
       // In a real app, this would send an email with a reset link
-      // For demo purposes, we'll just show the reset password form
-      toast.success("Password reset link sent to your email");
+      // For this demo, we're simulating the email being sent
+      toast.success(`Password reset link sent to ${values.email}`);
+      
+      // Show a message explaining what would happen in a real app
+      toast.info("In a real app, an email would be sent with a reset link");
+      
       setTimeout(() => {
         setIsForgotPassword(false);
         setIsResetPassword(true);
@@ -165,6 +169,8 @@ const Login = () => {
       });
       
       toast.success("Password reset successfully");
+      toast.info("You can now log in with your new password");
+      
       setTimeout(() => {
         setIsResetPassword(false);
         setIsLogin(true);

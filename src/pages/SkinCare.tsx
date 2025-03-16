@@ -72,6 +72,23 @@ const SkinCare = () => {
     }
   };
 
+  // Handle checkbox changes
+  const handleSerum1Change = (checked: boolean) => {
+    setSerum1(checked);
+  };
+
+  const handleSerum2Change = (checked: boolean) => {
+    setSerum2(checked);
+  };
+
+  const handleSunscreenChange = (checked: boolean) => {
+    setSunscreen(checked);
+  };
+
+  const handleMoisturizerChange = (checked: boolean) => {
+    setMoisturizer(checked);
+  };
+
   return (
     <div className="app-container page-transition">
       <Header title="Skincare Routine" showBackButton />
@@ -88,22 +105,22 @@ const SkinCare = () => {
         <Card className="mt-4 p-4">
           <div className="flex flex-col gap-4">
             <label className="flex items-center space-x-3 cursor-pointer">
-              <Checkbox id="serum1" checked={serum1} onCheckedChange={setSerum1} />
+              <Checkbox id="serum1" checked={serum1} onCheckedChange={handleSerum1Change} />
               <span className="text-lg text-app-darkGray">Serum 1</span>
             </label>
             
             <label className="flex items-center space-x-3 cursor-pointer">
-              <Checkbox id="serum2" checked={serum2} onCheckedChange={setSerum2} />
+              <Checkbox id="serum2" checked={serum2} onCheckedChange={handleSerum2Change} />
               <span className="text-lg text-app-darkGray">Serum 2</span>
             </label>
             
             <label className="flex items-center space-x-3 cursor-pointer">
-              <Checkbox id="sunscreen" checked={sunscreen} onCheckedChange={setSunscreen} />
+              <Checkbox id="sunscreen" checked={sunscreen} onCheckedChange={handleSunscreenChange} />
               <span className="text-lg text-app-darkGray">Sunscreen</span>
             </label>
             
             <label className="flex items-center space-x-3 cursor-pointer">
-              <Checkbox id="moisturizer" checked={moisturizer} onCheckedChange={setMoisturizer} />
+              <Checkbox id="moisturizer" checked={moisturizer} onCheckedChange={handleMoisturizerChange} />
               <span className="text-lg text-app-darkGray">Moisturizer</span>
             </label>
           </div>
