@@ -6,9 +6,11 @@ import Header from '@/components/layout/Header';
 import { Card } from '@/components/ui/card';
 import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
-import { saveSkincareRoutine, getTodayData, getSkincareRoutines } from '@/lib/storage';
+import { saveSkincareRoutine, getSkincareRoutines } from '@/lib/storage';
 import { SkincareRoutine } from '@/lib/types';
 import { Check } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 const SkinCare = () => {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const SkinCare = () => {
   
   // Check if today's data already exists
   useEffect(() => {
-    const todayData = getTodayData<SkincareRoutine>(getSkincareRoutines);
+    const todayData = getTodayData();
     if (todayData) {
       setReminderTime(todayData.reminderTime);
       setSerum1(todayData.serum1);
@@ -30,6 +32,13 @@ const SkinCare = () => {
       setMoisturizer(todayData.moisturizer);
     }
   }, []);
+
+  // Helper function to get today's data
+  const getTodayData = () => {
+    const routines = getSkincareRoutines();
+    const today = getCurrentDate();
+    return routines.find(routine => routine.date === today);
+  };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -63,41 +72,12 @@ const SkinCare = () => {
     }
   };
 
-  const SkinCareCheckbox = ({ 
-    label, 
-    checked, 
-    onChange 
-  }: { 
-    label: string; 
-    checked: boolean; 
-    onChange: (checked: boolean) => void;
-  }) => (
-    <div className="mb-4">
-      <label className="flex items-center cursor-pointer group">
-        <div className={`w-6 h-6 rounded border flex items-center justify-center transition-colors mr-3 ${
-          checked 
-            ? 'bg-app-blue border-app-blue' 
-            : 'border-gray-300 group-hover:border-app-blue/50'
-        }`}>
-          {checked && <Check className="w-4 h-4 text-white" />}
-        </div>
-        <span className="text-lg text-app-darkGray">{label}</span>
-      </label>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="sr-only"
-      />
-    </div>
-  );
-
   return (
     <div className="app-container page-transition">
       <Header title="Skincare Routine" showBackButton />
       
       <div className="px-5">
-        <Card className="bg-app-lightGray border border-gray-100">
+        <Card className="p-4 bg-app-lightGray border border-gray-100">
           <TimeSelector
             label="Reminder Time:"
             value={reminderTime}
@@ -105,30 +85,28 @@ const SkinCare = () => {
           />
         </Card>
         
-        <Card>
-          <SkinCareCheckbox 
-            label="Serum 1" 
-            checked={serum1} 
-            onChange={setSerum1} 
-          />
-          
-          <SkinCareCheckbox 
-            label="Serum 2" 
-            checked={serum2} 
-            onChange={setSerum2} 
-          />
-          
-          <SkinCareCheckbox 
-            label="Sunscreen" 
-            checked={sunscreen} 
-            onChange={setSunscreen} 
-          />
-          
-          <SkinCareCheckbox 
-            label="Moisturizer" 
-            checked={moisturizer} 
-            onChange={setMoisturizer} 
-          />
+        <Card className="mt-4 p-4">
+          <div className="flex flex-col gap-4">
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <Checkbox id="serum1" checked={serum1} onCheckedChange={setSerum1} />
+              <span className="text-lg text-app-darkGray">Serum 1</span>
+            </label>
+            
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <Checkbox id="serum2" checked={serum2} onCheckedChange={setSerum2} />
+              <span className="text-lg text-app-darkGray">Serum 2</span>
+            </label>
+            
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <Checkbox id="sunscreen" checked={sunscreen} onCheckedChange={setSunscreen} />
+              <span className="text-lg text-app-darkGray">Sunscreen</span>
+            </label>
+            
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <Checkbox id="moisturizer" checked={moisturizer} onCheckedChange={setMoisturizer} />
+              <span className="text-lg text-app-darkGray">Moisturizer</span>
+            </label>
+          </div>
         </Card>
         
         <div className="bg-white/50 p-4 rounded-lg my-4">
@@ -142,13 +120,13 @@ const SkinCare = () => {
           </div>
         </div>
         
-        <button
-          className="btn-primary w-full mt-4"
+        <Button
+          className="w-full mt-4"
           onClick={handleSubmit}
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Saving...' : 'Save Routine'}
-        </button>
+        </Button>
       </div>
     </div>
   );
