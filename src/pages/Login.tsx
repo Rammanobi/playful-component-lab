@@ -122,6 +122,9 @@ const Login = () => {
     try {
       // Check if email exists
       const user = getUserCredentials();
+      console.log('Checking email:', values.email);
+      console.log('Stored user:', user);
+      
       if (!user || user.email !== values.email) {
         toast.error("No account found with this email address");
         setIsLoading(false);
@@ -161,6 +164,8 @@ const Login = () => {
         setIsLoading(false);
         return;
       }
+      
+      console.log('Resetting password for email:', resetEmail);
       
       // Update password
       await saveUserCredentials({

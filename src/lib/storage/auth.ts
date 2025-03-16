@@ -19,8 +19,13 @@ export const saveUserCredentials = (credentials: UserCredentials): boolean => {
 export const getUserCredentials = (): UserCredentials | null => {
   try {
     const credentialsStr = localStorage.getItem('userCredentials');
-    if (!credentialsStr) return null;
-    return JSON.parse(credentialsStr) as UserCredentials;
+    if (!credentialsStr) {
+      console.log('No user credentials found in storage');
+      return null;
+    }
+    const credentials = JSON.parse(credentialsStr) as UserCredentials;
+    console.log('Retrieved credentials for email:', credentials.email);
+    return credentials;
   } catch (e) {
     console.error('Error getting user credentials:', e);
     return null;
@@ -38,4 +43,9 @@ export const getCurrentUserEmail = (): string | null => {
 export const logoutUser = (): void => {
   localStorage.removeItem('isLoggedIn');
   localStorage.removeItem('userEmail');
+};
+
+export const checkEmailExists = (email: string): boolean => {
+  const credentials = getUserCredentials();
+  return credentials !== null && credentials.email === email;
 };
