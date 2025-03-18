@@ -8,14 +8,9 @@ import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { checkEmailExists } from '@/lib/storage/auth';
+import FormFieldWithIcon from './FormFieldWithIcon';
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -57,14 +52,17 @@ const ForgotPasswordForm = ({
       // Store email for reset password
       setResetEmail(values.email);
       
-      // In a real app, this would send an email with a reset link
-      toast.success(`Password reset link sent to ${values.email}`);
-      toast.info("In a real app, an email would be sent with a reset link");
+      // In a real app, this would send an actual email with a secure token/link
+      toast.success(`Reset instructions sent to ${values.email}`);
+      toast.info("Please check your email inbox for password reset instructions");
       
+      // For demo purposes only, we'll continue to the reset screen
+      // In a real app, the user would click the link in their email to access the reset page
       setTimeout(() => {
+        toast.info("DEMO MODE: Automatically proceeding to reset screen");
         setIsForgotPassword(false);
         setIsResetPassword(true);
-      }, 1500);
+      }, 3000);
     } catch (error) {
       console.error('Forgot password error:', error);
       toast.error("Failed to process request");
@@ -77,26 +75,21 @@ const ForgotPasswordForm = ({
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input placeholder="your@email.com" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email"
+            placeholder="your@email.com"
+            Icon={Mail}
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : "Send Reset Link"}
+            {isLoading ? "Processing..." : "Send Reset Instructions"}
           </Button>
+          
+          <div className="mt-2 text-sm text-gray-500 text-center">
+            In a real application, you would receive an email with a secure link to reset your password.
+          </div>
         </form>
       </Form>
 
