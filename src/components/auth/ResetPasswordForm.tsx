@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Lock, KeyRound, ShieldCheck } from 'lucide-react';
+import { Lock, KeyRound, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { saveUserCredentials } from '@/lib/storage/auth';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import FormFieldWithIcon from './FormFieldWithIcon';
 
 const resetPasswordSchema = z.object({
   otp: z.string().min(6, { message: "Please enter the 6-digit verification code" }),
@@ -132,38 +133,22 @@ const ResetPasswordForm = ({
             )}
           />
 
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>New Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input type="password" placeholder="••••••" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="New Password"
+            placeholder="••••••"
+            type="password"
+            Icon={Lock}
           />
           
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <KeyRound className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input type="password" placeholder="••••••" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Confirm Password"
+            placeholder="••••••"
+            type="password"
+            Icon={KeyRound}
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
