@@ -52,15 +52,20 @@ const ForgotPasswordForm = ({
       // Store email for reset password
       setResetEmail(values.email);
       
-      // In a real app, this would send an actual email with OTP or reset link
-      toast.success(`Recovery email sent to ${values.email}`);
-      toast.info("Please check your Gmail inbox for the verification code");
+      // In a real app, this would send an actual email with OTP
+      toast.success(`Recovery email would be sent to ${values.email} in a real app`);
       
-      // Simulate sending an email with OTP
-      // In a real app, this would trigger an API call to send an actual email
-      localStorage.setItem('resetOTP', Math.floor(100000 + Math.random() * 900000).toString());
+      // Generate and store OTP for simulation purposes
+      const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+      localStorage.setItem('resetOTP', generatedOTP);
       
-      // For demo purposes, we'll proceed to the reset screen after a delay
+      // In a real-world application, this would be server-side logic
+      // and the OTP would be sent to the user's actual email address
+      
+      // For demo purposes - show the OTP in a toast notification
+      // In a real app, this would never happen - it's just for demonstration
+      toast.info(`DEMO MODE: Your verification code is: ${generatedOTP}`);
+      
       setTimeout(() => {
         setIsForgotPassword(false);
         setIsResetPassword(true);
@@ -90,8 +95,13 @@ const ForgotPasswordForm = ({
           </Button>
           
           <div className="mt-2 text-sm text-gray-500 text-center">
-            In a real application, you would receive an email at your Gmail address 
-            with a verification code to reset your password.
+            <p>
+              In a real application, a verification code would be sent to your 
+              Gmail inbox to reset your password.
+            </p>
+            <p className="mt-1">
+              For this demo, the code will be displayed here instead.
+            </p>
           </div>
         </form>
       </Form>
