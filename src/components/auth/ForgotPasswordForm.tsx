@@ -52,17 +52,19 @@ const ForgotPasswordForm = ({
       // Store email for reset password
       setResetEmail(values.email);
       
-      // In a real app, this would send an actual email with a secure token/link
-      toast.success(`Reset instructions sent to ${values.email}`);
-      toast.info("Please check your email inbox for password reset instructions");
+      // In a real app, this would send an actual email with OTP or reset link
+      toast.success(`Recovery email sent to ${values.email}`);
+      toast.info("Please check your Gmail inbox for the verification code");
       
-      // For demo purposes only, we'll continue to the reset screen
-      // In a real app, the user would click the link in their email to access the reset page
+      // Simulate sending an email with OTP
+      // In a real app, this would trigger an API call to send an actual email
+      localStorage.setItem('resetOTP', Math.floor(100000 + Math.random() * 900000).toString());
+      
+      // For demo purposes, we'll proceed to the reset screen after a delay
       setTimeout(() => {
-        toast.info("DEMO MODE: Automatically proceeding to reset screen");
         setIsForgotPassword(false);
         setIsResetPassword(true);
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.error('Forgot password error:', error);
       toast.error("Failed to process request");
@@ -84,11 +86,12 @@ const ForgotPasswordForm = ({
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : "Send Reset Instructions"}
+            {isLoading ? "Processing..." : "Send Verification Code"}
           </Button>
           
           <div className="mt-2 text-sm text-gray-500 text-center">
-            In a real application, you would receive an email with a secure link to reset your password.
+            In a real application, you would receive an email at your Gmail address 
+            with a verification code to reset your password.
           </div>
         </form>
       </Form>
