@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, Eye, Trash2 } from 'lucide-react';
+import { ChevronLeft, Trash2, CalendarDays } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -14,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { toast } from 'sonner';
 import { useLogDetails } from '@/hooks/useLogDetails';
 
 const LogDetails = () => {
@@ -28,18 +27,32 @@ const LogDetails = () => {
     dayDescriptions,
     deleteItem,
     activeTab,
-    setActiveTab
+    setActiveTab,
+    today
   } = useLogDetails(type);
+
+  // Format the date for display
+  const formattedDate = new Date(today).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 
   return (
     <div className="app-container page-transition">
-      <Header title="Storage Log Details" showBackButton />
+      <Header title="Today's Logs" showBackButton />
       
       <div className="px-5 space-y-6">
         <Button variant="outline" onClick={() => navigate('/storage')} className="mb-4">
           <ChevronLeft className="h-4 w-4 mr-2" />
           Back to Storage
         </Button>
+        
+        <div className="flex items-center justify-center mb-4 text-lg font-medium">
+          <CalendarDays className="h-5 w-5 mr-2" />
+          {formattedDate}
+        </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-5 mb-4">
@@ -53,14 +66,14 @@ const LogDetails = () => {
           <TabsContent value="sleep">
             <Card>
               <CardHeader>
-                <CardTitle>Sleep Records</CardTitle>
+                <CardTitle>Today's Sleep Record</CardTitle>
               </CardHeader>
               <CardContent>
                 {sleepData.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Time</TableHead>
                         <TableHead>Hours</TableHead>
                         <TableHead>Quality</TableHead>
                         <TableHead>Actions</TableHead>
@@ -69,7 +82,7 @@ const LogDetails = () => {
                     <TableBody>
                       {sleepData.map((entry) => (
                         <TableRow key={entry.id}>
-                          <TableCell>{entry.date}</TableCell>
+                          <TableCell>{entry.timestamp || "Not recorded"}</TableCell>
                           <TableCell>{entry.hoursSlept}</TableCell>
                           <TableCell>{entry.quality}</TableCell>
                           <TableCell>
@@ -86,7 +99,7 @@ const LogDetails = () => {
                     </TableBody>
                   </Table>
                 ) : (
-                  <p className="text-center py-4">No sleep records found.</p>
+                  <p className="text-center py-4">No sleep records for today.</p>
                 )}
               </CardContent>
             </Card>
@@ -95,25 +108,25 @@ const LogDetails = () => {
           <TabsContent value="meal">
             <Card>
               <CardHeader>
-                <CardTitle>Meal Records</CardTitle>
+                <CardTitle>Today's Meals</CardTitle>
               </CardHeader>
               <CardContent>
                 {mealData.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
                         <TableHead>Title</TableHead>
                         <TableHead>Time</TableHead>
+                        <TableHead>Description</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {mealData.map((entry) => (
                         <TableRow key={entry.id}>
-                          <TableCell>{entry.date}</TableCell>
                           <TableCell>{entry.title}</TableCell>
                           <TableCell>{entry.time}</TableCell>
+                          <TableCell className="max-w-48 truncate">{entry.description || "N/A"}</TableCell>
                           <TableCell>
                             <Button 
                               variant="destructive" 
@@ -128,7 +141,7 @@ const LogDetails = () => {
                     </TableBody>
                   </Table>
                 ) : (
-                  <p className="text-center py-4">No meal records found.</p>
+                  <p className="text-center py-4">No meal records for today.</p>
                 )}
               </CardContent>
             </Card>
@@ -137,14 +150,14 @@ const LogDetails = () => {
           <TabsContent value="stress">
             <Card>
               <CardHeader>
-                <CardTitle>Stress Logs</CardTitle>
+                <CardTitle>Today's Stress Logs</CardTitle>
               </CardHeader>
               <CardContent>
                 {stressLogs.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Time</TableHead>
                         <TableHead>Rating</TableHead>
                         <TableHead>Notes</TableHead>
                         <TableHead>Actions</TableHead>
@@ -153,9 +166,9 @@ const LogDetails = () => {
                     <TableBody>
                       {stressLogs.map((entry) => (
                         <TableRow key={entry.id}>
-                          <TableCell>{entry.date}</TableCell>
+                          <TableCell>{entry.timestamp || "Not recorded"}</TableCell>
                           <TableCell>{entry.rating}/5</TableCell>
-                          <TableCell className="max-w-48 truncate">{entry.notes}</TableCell>
+                          <TableCell className="max-w-48 truncate">{entry.notes || "N/A"}</TableCell>
                           <TableCell>
                             <Button 
                               variant="destructive" 
@@ -170,7 +183,7 @@ const LogDetails = () => {
                     </TableBody>
                   </Table>
                 ) : (
-                  <p className="text-center py-4">No stress logs found.</p>
+                  <p className="text-center py-4">No stress logs for today.</p>
                 )}
               </CardContent>
             </Card>
@@ -179,14 +192,13 @@ const LogDetails = () => {
           <TabsContent value="skincare">
             <Card>
               <CardHeader>
-                <CardTitle>Skincare Routines</CardTitle>
+                <CardTitle>Today's Skincare Routine</CardTitle>
               </CardHeader>
               <CardContent>
                 {skincareRoutines.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
                         <TableHead>Reminder Time</TableHead>
                         <TableHead>Products Used</TableHead>
                         <TableHead>Actions</TableHead>
@@ -195,7 +207,6 @@ const LogDetails = () => {
                     <TableBody>
                       {skincareRoutines.map((entry) => (
                         <TableRow key={entry.id}>
-                          <TableCell>{entry.date}</TableCell>
                           <TableCell>{entry.reminderTime}</TableCell>
                           <TableCell>
                             {[
@@ -219,7 +230,7 @@ const LogDetails = () => {
                     </TableBody>
                   </Table>
                 ) : (
-                  <p className="text-center py-4">No skincare routines found.</p>
+                  <p className="text-center py-4">No skincare routines for today.</p>
                 )}
               </CardContent>
             </Card>
@@ -228,14 +239,14 @@ const LogDetails = () => {
           <TabsContent value="day">
             <Card>
               <CardHeader>
-                <CardTitle>Day Descriptions</CardTitle>
+                <CardTitle>Today's Reflection</CardTitle>
               </CardHeader>
               <CardContent>
                 {dayDescriptions.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Time</TableHead>
                         <TableHead>Description</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
@@ -243,7 +254,7 @@ const LogDetails = () => {
                     <TableBody>
                       {dayDescriptions.map((entry) => (
                         <TableRow key={entry.id}>
-                          <TableCell>{entry.date}</TableCell>
+                          <TableCell>{entry.timestamp || "Not recorded"}</TableCell>
                           <TableCell className="max-w-48 truncate">{entry.description}</TableCell>
                           <TableCell>
                             <Button 
@@ -259,7 +270,7 @@ const LogDetails = () => {
                     </TableBody>
                   </Table>
                 ) : (
-                  <p className="text-center py-4">No day descriptions found.</p>
+                  <p className="text-center py-4">No day descriptions for today.</p>
                 )}
               </CardContent>
             </Card>

@@ -11,6 +11,7 @@ import {
 } from '@/lib/storage';
 import { safeStorage } from '@/lib/storage/utils';
 import { SleepData, MealData, StressLog, SkincareRoutine, DayDescription, StorageKeys } from '@/lib/types';
+import { getCurrentDate } from '@/lib/utils';
 
 type LogType = 'sleep' | 'meal' | 'stress' | 'skincare' | 'day';
 
@@ -27,13 +28,15 @@ export const useLogDetails = (initialType: string | undefined) => {
   const [stressLogs, setStressLogs] = useState<StressLog[]>([]);
   const [skincareRoutines, setSkincareRoutines] = useState<SkincareRoutine[]>([]);
   const [dayDescriptions, setDayDescriptions] = useState<DayDescription[]>([]);
+  const today = getCurrentDate();
 
   const loadData = () => {
-    setSleepData(getSleepData());
-    setMealData(getMealData());
-    setStressLogs(getStressLogs());
-    setSkincareRoutines(getSkincareRoutines());
-    setDayDescriptions(getDayDescriptions());
+    // Filter each data type to only include entries for the current day
+    setSleepData(getSleepData().filter(entry => entry.date === today));
+    setMealData(getMealData().filter(entry => entry.date === today));
+    setStressLogs(getStressLogs().filter(entry => entry.date === today));
+    setSkincareRoutines(getSkincareRoutines().filter(entry => entry.date === today));
+    setDayDescriptions(getDayDescriptions().filter(entry => entry.date === today));
   };
 
   useEffect(() => {
@@ -79,6 +82,7 @@ export const useLogDetails = (initialType: string | undefined) => {
     dayDescriptions,
     deleteItem,
     activeTab,
-    setActiveTab
+    setActiveTab,
+    today
   };
 };
