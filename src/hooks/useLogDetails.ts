@@ -28,20 +28,52 @@ export const useLogDetails = (initialType: string | undefined) => {
   const [stressLogs, setStressLogs] = useState<StressLog[]>([]);
   const [skincareRoutines, setSkincareRoutines] = useState<SkincareRoutine[]>([]);
   const [dayDescriptions, setDayDescriptions] = useState<DayDescription[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(getCurrentDate());
+  const [showAllDates, setShowAllDates] = useState<boolean>(false);
+  
   const today = getCurrentDate();
+  const allDates = getAllUniqueDates();
+
+  // Function to get all unique dates from all log types
+  function getAllUniqueDates(): string[] {
+    const dateSet = new Set<string>();
+    
+    // Add dates from all log types
+    getSleepData().forEach(entry => dateSet.add(entry.date));
+    getMealData().forEach(entry => dateSet.add(entry.date));
+    getStressLogs().forEach(entry => dateSet.add(entry.date));
+    getSkincareRoutines().forEach(entry => dateSet.add(entry.date));
+    getDayDescriptions().forEach(entry => dateSet.add(entry.date));
+    
+    // Convert to array and sort dates in descending order (newest first)
+    return Array.from(dateSet).sort((a, b) => {
+      const dateA = new Date(a.split('-').reverse().join('-'));
+      const dateB = new Date(b.split('-').reverse().join('-'));
+      return dateB.getTime() - dateA.getTime();
+    });
+  }
 
   const loadData = () => {
-    // Filter each data type to only include entries for the current day
-    setSleepData(getSleepData().filter(entry => entry.date === today));
-    setMealData(getMealData().filter(entry => entry.date === today));
-    setStressLogs(getStressLogs().filter(entry => entry.date === today));
-    setSkincareRoutines(getSkincareRoutines().filter(entry => entry.date === today));
-    setDayDescriptions(getDayDescriptions().filter(entry => entry.date === today));
+    if (showAllDates) {
+      // Show all data without date filtering
+      setSleepData(getSleepData());
+      setMealData(getMealData());
+      setStressLogs(getStressLogs());
+      setSkincareRoutines(getSkincareRoutines());
+      setDayDescriptions(getDayDescriptions());
+    } else {
+      // Filter data for the selected date
+      setSleepData(getSleepData().filter(entry => entry.date === selectedDate));
+      setMealData(getMealData().filter(entry => entry.date === selectedDate));
+      setStressLogs(getStressLogs().filter(entry => entry.date === selectedDate));
+      setSkincareRoutines(getSkincareRoutines().filter(entry => entry.date === selectedDate));
+      setDayDescriptions(getDayDescriptions().filter(entry => entry.date === selectedDate));
+    }
   };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedDate, showAllDates]);
 
   const deleteItem = (type: string, id: string) => {
     try {
@@ -83,6 +115,11 @@ export const useLogDetails = (initialType: string | undefined) => {
     deleteItem,
     activeTab,
     setActiveTab,
-    today
+    today,
+    selectedDate,
+    setSelectedDate,
+    showAllDates,
+    setShowAllDates,
+    allDates
   };
 };
