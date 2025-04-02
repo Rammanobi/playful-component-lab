@@ -1,15 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, CalendarDays, Calendar, ListFilter } from 'lucide-react';
+import { ChevronLeft, CalendarDays, Calendar, Edit } from 'lucide-react';
 import { useLogDetails } from '@/hooks/useLogDetails';
 import LogTabSection from '@/components/logs/LogTabSection';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import DateSelector from '@/components/logs/DateSelector';
+import EditLogModal from '@/components/logs/EditLogModal';
+import { parseDate, formatDateString } from '@/lib/utils';
 
 const LogDetails = () => {
   const { type } = useParams();
@@ -21,6 +23,7 @@ const LogDetails = () => {
     skincareRoutines,
     dayDescriptions,
     deleteItem,
+    updateItem,
     activeTab,
     setActiveTab,
     today,
@@ -31,10 +34,13 @@ const LogDetails = () => {
     allDates
   } = useLogDetails(type);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentEditItem, setCurrentEditItem] = useState<any>(null);
+  const [currentEditType, setCurrentEditType] = useState<string>('');
+
   // Format the date for display
   const formatDateForDisplay = (dateStr: string) => {
-    const [day, month, year] = dateStr.split('-');
-    const date = new Date(`${year}-${month}-${day}`);
+    const date = parseDate(dateStr);
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -43,8 +49,24 @@ const LogDetails = () => {
     });
   };
 
+  const handleEditItem = (type: string, item: any) => {
+    setCurrentEditType(type);
+    setCurrentEditItem(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      const formattedDate = formatDateString(date);
+      setSelectedDate(formattedDate);
+    }
+  };
+
   const formattedDate = formatDateForDisplay(selectedDate);
   const isToday = selectedDate === today;
+  
+  // Convert string date to Date object for the DateSelector
+  const selectedDateObj = parseDate(selectedDate);
 
   return (
     <div className="app-container page-transition">
@@ -73,21 +95,10 @@ const LogDetails = () => {
           </div>
           
           {!showAllDates && (
-            <Select value={selectedDate} onValueChange={setSelectedDate}>
-              <SelectTrigger className="w-full">
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Select date" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {allDates.map((date) => (
-                  <SelectItem key={date} value={date}>
-                    {date === today ? `Today (${date})` : formatDateForDisplay(date)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DateSelector 
+              selectedDate={selectedDateObj} 
+              onSelectDate={handleDateChange} 
+            />
           )}
         </div>
         
@@ -107,10 +118,19 @@ const LogDetails = () => {
             skincareRoutines={skincareRoutines}
             dayDescriptions={dayDescriptions}
             onDelete={deleteItem}
+            onEdit={handleEditItem}
             showDate={showAllDates}
           />
         </Tabs>
       </div>
+
+      <EditLogModal
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        logItem={currentEditItem}
+        logType={currentEditType}
+        onSave={updateItem}
+      />
     </div>
   );
 };

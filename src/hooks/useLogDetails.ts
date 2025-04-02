@@ -7,7 +7,12 @@ import {
   getMealData, 
   getStressLogs, 
   getSkincareRoutines,
-  getDayDescriptions
+  getDayDescriptions,
+  updateSleepData,
+  updateMealData,
+  updateStressLog,
+  updateSkincareRoutine,
+  updateDayDescription
 } from '@/lib/storage';
 import { safeStorage } from '@/lib/storage/utils';
 import { SleepData, MealData, StressLog, SkincareRoutine, DayDescription, StorageKeys } from '@/lib/types';
@@ -106,6 +111,37 @@ export const useLogDetails = (initialType: string | undefined) => {
     }
   };
 
+  const updateItem = (type: string, updatedItem: any) => {
+    try {
+      switch (type) {
+        case 'sleep':
+          updateSleepData(updatedItem as SleepData);
+          break;
+        case 'meal': 
+          updateMealData(updatedItem as MealData);
+          break;
+        case 'stress': 
+          updateStressLog(updatedItem as StressLog);
+          break;
+        case 'skincare': 
+          updateSkincareRoutine(updatedItem as SkincareRoutine);
+          break;
+        case 'day': 
+          updateDayDescription(updatedItem as DayDescription);
+          break;
+        default:
+          throw new Error(`Unknown log type: ${type}`);
+      }
+      
+      loadData();
+      return true;
+    } catch (error) {
+      console.error(`Error updating ${type} record:`, error);
+      toast.error(`Failed to update ${type} record`);
+      return false;
+    }
+  };
+
   return {
     sleepData,
     mealData,
@@ -113,6 +149,7 @@ export const useLogDetails = (initialType: string | undefined) => {
     skincareRoutines,
     dayDescriptions,
     deleteItem,
+    updateItem,
     activeTab,
     setActiveTab,
     today,

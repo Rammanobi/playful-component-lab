@@ -10,3 +10,13 @@ export const saveStressLog = (newData: StressLog): void => {
   const logs = getStressLogs();
   safeStorage.set<StressLog>('stressLogs', [...logs, newData]);
 };
+
+export const updateStressLog = (updatedData: StressLog): void => {
+  const logs = getStressLogs();
+  const index = logs.findIndex(item => item.id === updatedData.id);
+  
+  if (index !== -1) {
+    logs[index] = updatedData;
+    safeStorage.set<StressLog>('stressLogs', logs);
+  }
+};

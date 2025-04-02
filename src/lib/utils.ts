@@ -1,31 +1,32 @@
 
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-export function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
-}
-
-export function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0];
-}
-
+// Get current date in DD-MM-YYYY format
 export function getCurrentDate(): string {
-  return formatDate(new Date());
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  
+  return `${day}-${month}-${year}`;
 }
 
-export function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+// Convert Date object to DD-MM-YYYY string
+export function formatDateString(date: Date): string {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}-${month}-${year}`;
 }
 
-export function formatTimeForDisplay(time: string): string {
-  const [hours, minutes] = time.split(':');
-  const hour = parseInt(hours, 10);
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const formattedHour = hour % 12 || 12;
-  return `${formattedHour}:${minutes} ${period}`;
+// Convert DD-MM-YYYY string to Date object
+export function parseDate(dateString: string): Date {
+  const [day, month, year] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
 }
