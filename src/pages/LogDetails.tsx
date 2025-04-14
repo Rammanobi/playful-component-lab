@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -12,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import DateSelector from '@/components/logs/DateSelector';
 import EditLogModal from '@/components/logs/EditLogModal';
 import { parseDate, formatDateString } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const LogDetails = () => {
   const { type } = useParams();
@@ -53,6 +53,16 @@ const LogDetails = () => {
     setCurrentEditType(type);
     setCurrentEditItem(item);
     setIsEditModalOpen(true);
+  };
+
+  const handleUpdateItem = async (type: string, updatedItem: any) => {
+    const success = updateItem(type, updatedItem);
+    if (success) {
+      toast.success('Log updated successfully');
+      setIsEditModalOpen(false);
+    } else {
+      toast.error('Failed to update log');
+    }
   };
 
   const handleDateChange = (date: Date | undefined) => {
@@ -129,7 +139,7 @@ const LogDetails = () => {
         onOpenChange={setIsEditModalOpen}
         logItem={currentEditItem}
         logType={currentEditType}
-        onSave={updateItem}
+        onSave={handleUpdateItem}
       />
     </div>
   );
