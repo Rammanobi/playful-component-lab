@@ -31,12 +31,14 @@ const resetPasswordSchema = z.object({
 type ResetPasswordFormProps = {
   resetEmail: string;
   setIsResetPassword: (value: boolean) => void;
-  setIsLogin: (value: boolean) => void;
+  onSuccess?: () => void;
+  setIsLogin?: (value: boolean) => void;
 };
 
 const ResetPasswordForm = ({ 
   resetEmail, 
   setIsResetPassword, 
+  onSuccess,
   setIsLogin 
 }: ResetPasswordFormProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -88,9 +90,16 @@ const ResetPasswordForm = ({
       toast.success("Password reset successfully");
       toast.info("You can now log in with your new password");
       
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+      
       setTimeout(() => {
         setIsResetPassword(false);
-        setIsLogin(true);
+        if (setIsLogin) {
+          setIsLogin(true);
+        }
       }, 1500);
     } catch (error) {
       console.error('Reset password error:', error);
@@ -165,7 +174,9 @@ const ResetPasswordForm = ({
         <button 
           onClick={() => {
             setIsResetPassword(false);
-            setIsLogin(true);
+            if (setIsLogin) {
+              setIsLogin(true);
+            }
           }} 
           className="text-app-blue hover:underline focus:outline-none"
         >

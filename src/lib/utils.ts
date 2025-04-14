@@ -1,13 +1,13 @@
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { v4 as uuidv4 } from 'uuid';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Get current date in DD-MM-YYYY format
-export function getCurrentDate(): string {
+export function getCurrentDate() {
   const today = new Date();
   const day = String(today.getDate()).padStart(2, '0');
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -16,7 +16,6 @@ export function getCurrentDate(): string {
   return `${day}-${month}-${year}`;
 }
 
-// Convert Date object to DD-MM-YYYY string
 export function formatDateString(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -25,22 +24,30 @@ export function formatDateString(date: Date): string {
   return `${day}-${month}-${year}`;
 }
 
-// Convert DD-MM-YYYY string to Date object
 export function parseDate(dateString: string): Date {
   const [day, month, year] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
 }
 
-// Generate a unique ID
-export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+export function formatTimeForDisplay(time: string): string {
+  // Handle empty or invalid time
+  if (!time || time === "") return "";
+  
+  // Assuming time is in 24-hour format like "14:30"
+  const [hours, minutes] = time.split(':').map(Number);
+  
+  if (isNaN(hours) || isNaN(minutes)) return time;
+  
+  // Convert to 12-hour format
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+  const displayMinutes = String(minutes).padStart(2, '0');
+  
+  return `${displayHours}:${displayMinutes} ${period}`;
 }
 
-// Format time for display (convert 24h format to 12h format)
-export function formatTimeForDisplay(time: string): string {
-  const [hours, minutes] = time.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
-  
-  return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+export function generateId(): string {
+  return uuidv4();
 }
+
+// Additional utility functions can be added here
