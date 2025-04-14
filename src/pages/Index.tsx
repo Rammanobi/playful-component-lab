@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Moon, Utensils, Heart, Sparkles, FileText, Database } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import UserProfile from '@/components/auth/UserProfile';
+import SupabaseUserProfile from '@/components/auth/SupabaseUserProfile';
 
 const Index = () => {
   return (
@@ -12,7 +12,7 @@ const Index = () => {
         Wellness Tracker
       </h1>
       
-      <UserProfile />
+      <SupabaseUserProfile />
       
       <div className="grid grid-cols-2 gap-4">
         <Link to="/sleep" className="transform transition-all duration-300 hover:scale-105">

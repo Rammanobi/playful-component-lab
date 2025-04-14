@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 import Index from "./pages/Index";
 import SleepTracking from "./pages/SleepTracking";
@@ -13,70 +14,69 @@ import SkinCare from "./pages/SkinCare";
 import DayDescription from "./pages/DayDescription";
 import Storage from "./pages/Storage";
 import LogDetails from "./pages/LogDetails";
-import Login from "./pages/Login";
+import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import { isUserLoggedIn } from "./lib/storage/auth";
+import SupabaseProtectedRoute from "./components/auth/SupabaseProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isLoggedIn = isUserLoggedIn();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner position="top-center" closeButton />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={
-              isLoggedIn ? <Navigate to="/" replace /> : <Login />
-            } />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/sleep" element={
-              <ProtectedRoute>
-                <SleepTracking />
-              </ProtectedRoute>
-            } />
-            <Route path="/food" element={
-              <ProtectedRoute>
-                <FoodTracker />
-              </ProtectedRoute>
-            } />
-            <Route path="/stress" element={
-              <ProtectedRoute>
-                <StressManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/skincare" element={
-              <ProtectedRoute>
-                <SkinCare />
-              </ProtectedRoute>
-            } />
-            <Route path="/day" element={
-              <ProtectedRoute>
-                <DayDescription />
-              </ProtectedRoute>
-            } />
-            <Route path="/storage" element={
-              <ProtectedRoute>
-                <Storage />
-              </ProtectedRoute>
-            } />
-            <Route path="/logs/:type?" element={
-              <ProtectedRoute>
-                <LogDetails />
-              </ProtectedRoute>
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner position="top-center" closeButton />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/" element={
+                <SupabaseProtectedRoute>
+                  <Index />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/sleep" element={
+                <SupabaseProtectedRoute>
+                  <SleepTracking />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/food" element={
+                <SupabaseProtectedRoute>
+                  <FoodTracker />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/stress" element={
+                <SupabaseProtectedRoute>
+                  <StressManagement />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/skincare" element={
+                <SupabaseProtectedRoute>
+                  <SkinCare />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/day" element={
+                <SupabaseProtectedRoute>
+                  <DayDescription />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/storage" element={
+                <SupabaseProtectedRoute>
+                  <Storage />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="/logs/:type?" element={
+                <SupabaseProtectedRoute>
+                  <LogDetails />
+                </SupabaseProtectedRoute>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
