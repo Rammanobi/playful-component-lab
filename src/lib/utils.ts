@@ -30,3 +30,17 @@ export function parseDate(dateString: string): Date {
   const [day, month, year] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
 }
+
+// Generate a unique ID
+export function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+// Format time for display (convert 24h format to 12h format)
+export function formatTimeForDisplay(time: string): string {
+  const [hours, minutes] = time.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  
+  return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+}
