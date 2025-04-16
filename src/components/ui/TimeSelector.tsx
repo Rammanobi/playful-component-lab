@@ -28,12 +28,12 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
 
   return (
     <div className={cn("mb-4", className)}>
-      <label className="label-text block mb-2">{label}</label>
+      {label && <label className="label-text block mb-2">{label}</label>}
       <div className="relative">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="time-select pr-10"
+          className="time-select w-full h-10 px-3 border rounded-md pr-10"
         >
           {timeOptions.map((time) => (
             <option key={time} value={time}>

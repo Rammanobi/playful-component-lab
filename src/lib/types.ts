@@ -2,8 +2,11 @@
 export interface SleepData {
   id: string;
   date: string;
+  bedTime?: string;
+  wakeTime?: string;
   hoursSlept: number;
   quality: string;
+  notes?: string;
   morningReminder: string;
   timestamp: string;
 }
@@ -14,6 +17,10 @@ export interface MealData {
   title: string;
   description: string;
   time: string;
+  mealType?: string;
+  satisfaction?: number;
+  foods?: string[];
+  notes?: string;
   timestamp: string;
 }
 
@@ -22,6 +29,10 @@ export interface StressLog {
   date: string;
   rating: number;
   notes: string;
+  time?: string;
+  stressLevel?: number;
+  triggers?: string;
+  copingMechanisms?: string;
   timestamp: string;
 }
 
@@ -33,6 +44,11 @@ export interface SkincareRoutine {
   serum2: boolean;
   sunscreen: boolean;
   moisturizer: boolean;
+  routineType?: string;
+  time?: string;
+  cleanser?: string;
+  productsUsed?: string[];
+  notes?: string;
   timestamp: string;
 }
 
@@ -40,6 +56,8 @@ export interface DayDescription {
   id: string;
   date: string;
   description: string;
+  dayRating?: number;
+  dailyGoals?: string;
   timestamp: string;
 }
 
