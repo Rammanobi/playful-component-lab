@@ -1,57 +1,67 @@
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 import { v4 as uuidv4 } from 'uuid';
-import { format } from 'date-fns';
-
-export function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ')
+ 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
 
-export function formatDate(input: Date | number): string {
-  const date = new Date(input)
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  })
+// Create a function to get the current date in DD-MM-YYYY format
+export function getCurrentDate(): string {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+  const yyyy = today.getFullYear();
+
+  return `${dd}-${mm}-${yyyy}`;
 }
 
-export function formatDateString(date: Date): string {
-  return format(date, 'yyyy-MM-dd');
-}
-
-export function parseDate(dateString: string): Date {
-  const [year, month, day] = dateString.split('-').map(Number);
+// Parse date string in DD-MM-YYYY format
+export function parseDate(dateStr: string): Date {
+  const [day, month, year] = dateStr.split('-').map(Number);
+  // Create new date (months are 0-indexed in JS Date)
   return new Date(year, month - 1, day);
 }
 
+// Format a Date object to DD-MM-YYYY
+export function formatDateString(date: Date | string, longFormat: boolean = false): string {
+  if (typeof date === 'string') {
+    // If already in DD-MM-YYYY format, just return it or convert it to long format
+    if (longFormat) {
+      const dateObj = parseDate(date);
+      return dateObj.toLocaleDateString('en-US', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+    return date;
+  }
+  
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+  const yyyy = date.getFullYear();
+
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+// Format time from 24h format to 12h format
+export function formatTime(timeString: string): string {
+  if (!timeString) return '';
+  
+  // Time might be in HH:MM format or just HH
+  const parts = timeString.split(':');
+  let hour = parseInt(parts[0], 10);
+  const minute = parts.length > 1 ? parts[1] : '00';
+  
+  const period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12; // Convert to 12h format
+  
+  return `${hour}:${minute} ${period}`;
+}
+
+// Generate a unique ID
 export function generateId(): string {
   return uuidv4();
 }
-
-export function getCurrentDate(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-export function formatTime(time: string): string {
-  if (!time) return '';
-  
-  // Handle various time formats
-  // If it's in 24-hour format (HH:MM), convert to 12-hour format
-  if (/^\d{1,2}:\d{2}$/.test(time)) {
-    const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hour12 = hours % 12 || 12;
-    return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
-  }
-  
-  // If it's already in a readable format, return as is
-  return time;
-}
-
-// Backward compatibility for any code that might use formatTimeForDisplay
-export const formatTimeForDisplay = formatTime;
-
-// Ensure the generateId function exists
