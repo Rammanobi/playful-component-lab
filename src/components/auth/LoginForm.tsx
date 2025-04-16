@@ -19,7 +19,7 @@ export const loginFormSchema = z.object({
 });
 
 type LoginFormProps = {
-  setIsLogin: (value: boolean) => void;
+  setIsLogin?: (value: boolean) => void;
   setIsForgotPassword: (value: boolean) => void;
 };
 
@@ -92,12 +92,14 @@ const LoginForm = ({ setIsLogin, setIsForgotPassword }: LoginFormProps) => {
       </Form>
 
       <div className="mt-4 text-center space-y-2">
-        <button 
-          onClick={() => setIsLogin(false)} 
-          className="text-app-blue hover:underline focus:outline-none"
-        >
-          Need an account? Register
-        </button>
+        {setIsLogin && (
+          <button 
+            onClick={() => setIsLogin(false)} 
+            className="text-app-blue hover:underline focus:outline-none"
+          >
+            Need an account? Register
+          </button>
+        )}
         
         <div>
           <button 

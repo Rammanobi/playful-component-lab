@@ -17,9 +17,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { saveUserCredentials, getUserCredentials } from '@/lib/storage/auth';
 import { loginFormSchema } from './LoginForm';
+import FormFieldWithIcon from './FormFieldWithIcon';
 
 type RegisterFormProps = {
-  setIsLogin: (value: boolean) => void;
+  setIsLogin?: (value: boolean) => void;
 };
 
 const RegisterForm = ({ setIsLogin }: RegisterFormProps) => {
@@ -52,7 +53,9 @@ const RegisterForm = ({ setIsLogin }: RegisterFormProps) => {
       });
       
       toast.success("Account created successfully");
-      setIsLogin(true);
+      if (setIsLogin) {
+        setIsLogin(true);
+      }
     } catch (error) {
       console.error('Registration error:', error);
       toast.error("Registration failed");
@@ -65,38 +68,21 @@ const RegisterForm = ({ setIsLogin }: RegisterFormProps) => {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input placeholder="your@email.com" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email"
+            placeholder="your@email.com"
+            Icon={Mail}
           />
           
-          <FormField
-            control={form.control}
+          <FormFieldWithIcon
+            form={form}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                    <Input type="password" placeholder="••••••" className="pl-10" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Password"
+            placeholder="••••••"
+            type="password"
+            Icon={Lock}
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
@@ -105,14 +91,16 @@ const RegisterForm = ({ setIsLogin }: RegisterFormProps) => {
         </form>
       </Form>
 
-      <div className="mt-4 text-center">
-        <button 
-          onClick={() => setIsLogin(true)} 
-          className="text-app-blue hover:underline focus:outline-none"
-        >
-          Already have an account? Login
-        </button>
-      </div>
+      {setIsLogin && (
+        <div className="mt-4 text-center">
+          <button 
+            onClick={() => setIsLogin(true)} 
+            className="text-app-blue hover:underline focus:outline-none"
+          >
+            Already have an account? Login
+          </button>
+        </div>
+      )}
     </>
   );
 };
