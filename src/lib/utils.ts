@@ -1,59 +1,57 @@
-
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
 import { v4 as uuidv4 } from 'uuid';
+import { format } from 'date-fns';
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ')
 }
 
-// Create a short UUID
-export function uuid(): string {
-  return uuidv4();
+export function formatDate(input: Date | number): string {
+  const date = new Date(input)
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  })
 }
 
-// For backward compatibility
-export function generateId(): string {
-  return uuid();
-}
-
-// Get current date in DD-MM-YYYY format
-export function getCurrentDate(): string {
-  const now = new Date();
-  return formatDateString(now);
-}
-
-// Format a date object to DD-MM-YYYY string
 export function formatDateString(date: Date): string {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  
-  return `${day}-${month}-${year}`;
+  return format(date, 'yyyy-MM-dd');
 }
 
-// Parse a DD-MM-YYYY string to Date object
 export function parseDate(dateString: string): Date {
-  const [day, month, year] = dateString.split('-').map(Number);
+  const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
 }
 
-// Format time from 24-hour format (e.g., "14:30") to 12-hour format (e.g., "2:30 PM")
+export function generateId(): string {
+  return uuidv4();
+}
+
+export function getCurrentDate(): string {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function formatTime(time: string): string {
   if (!time) return '';
   
-  const [hourStr, minuteStr] = time.split(':');
-  let hour = parseInt(hourStr);
-  const minute = minuteStr;
+  // Handle various time formats
+  // If it's in 24-hour format (HH:MM), convert to 12-hour format
+  if (/^\d{1,2}:\d{2}$/.test(time)) {
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
+    return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+  }
   
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  hour = hour % 12;
-  hour = hour ? hour : 12; // the hour '0' should be '12'
-  
-  return `${hour}:${minute} ${ampm}`;
+  // If it's already in a readable format, return as is
+  return time;
 }
 
-// For backward compatibility
-export function formatTimeForDisplay(time: string): string {
-  return formatTime(time);
-}
+// Backward compatibility for any code that might use formatTimeForDisplay
+export const formatTimeForDisplay = formatTime;
+
+// Ensure the generateId function exists

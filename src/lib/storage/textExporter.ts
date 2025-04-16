@@ -1,103 +1,64 @@
-
-// Re-export backup functionality from their dedicated files
+import { SleepData, MealData, StressLog, SkincareRoutine, DayDescription } from '../types';
 import { formatTime } from '../utils';
-import { getSleepData } from './sleep';
-import { getMealData } from './meal';
-import { getStressLogs } from './stress'; 
-import { getSkincareRoutines } from './skincare';
-import { getDayDescriptions } from './day';
 
-export const exportDataAsText = (): string => {
-  try {
-    let report = "WELLNESS TRACKER REPORT\n";
-    report += "=======================\n\n";
-    report += `Generated: ${new Date().toLocaleString()}\n\n`;
-    
-    // Sleep Data
-    const sleepData = getSleepData();
-    if (sleepData.length > 0) {
-      report += "SLEEP TRACKING\n";
-      report += "==============\n\n";
-      
-      sleepData.forEach(entry => {
-        report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Hours Slept: ${entry.hoursSlept}\n`;
-        report += `Sleep Quality: ${entry.quality}\n`;
-        if (entry.morningReminder) {
-          report += `Morning Reminder: ${entry.morningReminder}\n`;
-        }
-        report += "\n";
-      });
-    }
-    
-    // Meal Data
-    const mealData = getMealData();
-    if (mealData.length > 0) {
-      report += "FOOD TRACKING\n";
-      report += "=============\n\n";
-      
-      mealData.forEach(entry => {
-        report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Meal: ${entry.title}\n`;
-        report += `Time: ${formatTime(entry.time)}\n`;
-        if (entry.description) {
-          report += `Description: ${entry.description}\n`;
-        }
-        report += "\n";
-      });
-    }
-    
-    // Stress Logs
-    const stressLogs = getStressLogs();
-    if (stressLogs.length > 0) {
-      report += "STRESS MANAGEMENT\n";
-      report += "=================\n\n";
-      
-      stressLogs.forEach(entry => {
-        report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Time: ${entry.timestamp ? formatTime(entry.timestamp) : 'Not recorded'}\n`;
-        report += `Stress Level: ${entry.rating}/5\n`;
-        if (entry.notes) {
-          report += `Notes: ${entry.notes}\n`;
-        }
-        report += "\n";
-      });
-    }
-    
-    // Skincare Routines
-    const skincareRoutines = getSkincareRoutines();
-    if (skincareRoutines.length > 0) {
-      report += "SKINCARE ROUTINE\n";
-      report += "================\n\n";
-      
-      skincareRoutines.forEach(entry => {
-        report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Reminder Time: ${formatTime(entry.reminderTime)}\n`;
-        report += `Products Used:\n`;
-        if (entry.serum1) report += "- Serum 1\n";
-        if (entry.serum2) report += "- Serum 2\n";
-        if (entry.sunscreen) report += "- Sunscreen\n";
-        if (entry.moisturizer) report += "- Moisturizer\n";
-        report += "\n";
-      });
-    }
-    
-    // Day Descriptions
-    const dayDescriptions = getDayDescriptions();
-    if (dayDescriptions.length > 0) {
-      report += "DAILY REFLECTIONS\n";
-      report += "=================\n\n";
-      
-      dayDescriptions.forEach(entry => {
-        report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Reflection: ${entry.description}\n`;
-        report += "\n";
-      });
-    }
-    
-    return report;
-  } catch (e) {
-    console.error('Error generating text report:', e);
-    return "Error generating report. Please try again.";
-  }
+export const exportSleepDataToText = (data: SleepData[]): string => {
+  let text = "Sleep Data:\n\n";
+  data.forEach(item => {
+    text += `Date: ${item.date}\n`;
+    text += `Bedtime: ${formatTime(item.bedTime)}\n`;
+    text += `Wake Time: ${formatTime(item.wakeTime)}\n`;
+    text += `Hours Slept: ${item.hoursSlept}\n`;
+    text += `Quality: ${item.quality}/5\n`;
+    text += `Notes: ${item.notes || 'N/A'}\n\n`;
+  });
+  return text;
+};
+
+export const exportMealDataToText = (data: MealData[]): string => {
+  let text = "Meal Data:\n\n";
+  data.forEach(item => {
+    text += `Date: ${item.date}\n`;
+    text += `Meal Type: ${item.mealType}\n`;
+    text += `Time: ${formatTime(item.time)}\n`;
+    text += `Satisfaction: ${item.satisfaction}/5\n`;
+    text += `Foods: ${item.foods ? item.foods.join(', ') : 'N/A'}\n`;
+    text += `Notes: ${item.notes || 'N/A'}\n\n`;
+  });
+  return text;
+};
+
+export const exportStressLogsToText = (data: StressLog[]): string => {
+  let text = "Stress Logs:\n\n";
+  data.forEach(item => {
+    text += `Date: ${item.date}\n`;
+    text += `Time: ${formatTime(item.time)}\n`;
+    text += `Stress Level: ${item.stressLevel}/5\n`;
+    text += `Triggers: ${item.triggers || 'N/A'}\n`;
+    text += `Coping Mechanisms: ${item.copingMechanisms || 'N/A'}\n\n`;
+  });
+  return text;
+};
+
+export const exportSkincareRoutinesToText = (data: SkincareRoutine[]): string => {
+  let text = "Skincare Routines:\n\n";
+  data.forEach(item => {
+    text += `Date: ${item.date}\n`;
+    text += `Routine Type: ${item.routineType}\n`;
+    text += `Time: ${formatTime(item.time)}\n`;
+    text += `Cleanser: ${item.cleanser || 'N/A'}\n`;
+    text += `Products Used: ${item.productsUsed ? item.productsUsed.join(', ') : 'N/A'}\n`;
+    text += `Notes: ${item.notes || 'N/A'}\n\n`;
+  });
+  return text;
+};
+
+export const exportDayDescriptionsToText = (data: DayDescription[]): string => {
+  let text = "Day Descriptions:\n\n";
+  data.forEach(item => {
+    text += `Date: ${item.date}\n`;
+    text += `Day Rating: ${item.dayRating}/5\n`;
+    text += `Description: ${item.description || 'N/A'}\n`;
+    text += `Daily Goals: ${item.dailyGoals || 'N/A'}\n\n`;
+  });
+  return text;
 };
