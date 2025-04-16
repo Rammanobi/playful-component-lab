@@ -9,7 +9,8 @@ interface ReadableReportProps {
 }
 
 const ReadableReport: React.FC<ReadableReportProps> = ({ onClose }) => {
-  const reportText = exportDataAsText();
+  // Fix: Pass an empty object as argument to exportDataAsText
+  const reportText = exportDataAsText({});
   
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">

@@ -74,7 +74,8 @@ export const useStorageManager = () => {
   
   const handleExportReadableData = () => {
     try {
-      const textData = exportDataAsText();
+      // Fix: Pass an empty object as argument to exportDataAsText
+      const textData = exportDataAsText({});
       const dataUri = 'data:text/plain;charset=utf-8,'+ encodeURIComponent(textData);
       
       const exportFileDefaultName = `wellness_report_${new Date().toISOString().slice(0, 10)}.txt`;
