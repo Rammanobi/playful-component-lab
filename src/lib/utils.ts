@@ -1,21 +1,24 @@
 
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 import { v4 as uuidv4 } from 'uuid';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
-export function getCurrentDate() {
-  const today = new Date();
-  const day = String(today.getDate()).padStart(2, '0');
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const year = today.getFullYear();
-  
-  return `${day}-${month}-${year}`;
+// Create a short UUID
+export function uuid(): string {
+  return uuidv4();
 }
 
+// Get current date in DD-MM-YYYY format
+export function getCurrentDate(): string {
+  const now = new Date();
+  return formatDateString(now);
+}
+
+// Format a date object to DD-MM-YYYY string
 export function formatDateString(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -24,30 +27,23 @@ export function formatDateString(date: Date): string {
   return `${day}-${month}-${year}`;
 }
 
+// Parse a DD-MM-YYYY string to Date object
 export function parseDate(dateString: string): Date {
   const [day, month, year] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
 }
 
-export function formatTimeForDisplay(time: string): string {
-  // Handle empty or invalid time
-  if (!time || time === "") return "";
+// Format time from 24-hour format (e.g., "14:30") to 12-hour format (e.g., "2:30 PM")
+export function formatTime(time: string): string {
+  if (!time) return '';
   
-  // Assuming time is in 24-hour format like "14:30"
-  const [hours, minutes] = time.split(':').map(Number);
+  const [hourStr, minuteStr] = time.split(':');
+  let hour = parseInt(hourStr);
+  const minute = minuteStr;
   
-  if (isNaN(hours) || isNaN(minutes)) return time;
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  hour = hour ? hour : 12; // the hour '0' should be '12'
   
-  // Convert to 12-hour format
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-  const displayMinutes = String(minutes).padStart(2, '0');
-  
-  return `${displayHours}:${displayMinutes} ${period}`;
+  return `${hour}:${minute} ${ampm}`;
 }
-
-export function generateId(): string {
-  return uuidv4();
-}
-
-// Additional utility functions can be added here
