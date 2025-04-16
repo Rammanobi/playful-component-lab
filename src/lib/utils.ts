@@ -12,6 +12,11 @@ export function uuid(): string {
   return uuidv4();
 }
 
+// For backward compatibility
+export function generateId(): string {
+  return uuid();
+}
+
 // Get current date in DD-MM-YYYY format
 export function getCurrentDate(): string {
   const now = new Date();
@@ -46,4 +51,9 @@ export function formatTime(time: string): string {
   hour = hour ? hour : 12; // the hour '0' should be '12'
   
   return `${hour}:${minute} ${ampm}`;
+}
+
+// For backward compatibility
+export function formatTimeForDisplay(time: string): string {
+  return formatTime(time);
 }

@@ -1,5 +1,6 @@
 
-import { formatTimeForDisplay } from '../utils';
+// Re-export backup functionality from their dedicated files
+import { formatTime } from '../utils';
 import { getSleepData } from './sleep';
 import { getMealData } from './meal';
 import { getStressLogs } from './stress'; 
@@ -38,7 +39,7 @@ export const exportDataAsText = (): string => {
       mealData.forEach(entry => {
         report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
         report += `Meal: ${entry.title}\n`;
-        report += `Time: ${formatTimeForDisplay(entry.time)}\n`;
+        report += `Time: ${formatTime(entry.time)}\n`;
         if (entry.description) {
           report += `Description: ${entry.description}\n`;
         }
@@ -54,7 +55,7 @@ export const exportDataAsText = (): string => {
       
       stressLogs.forEach(entry => {
         report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Time: ${entry.timestamp ? formatTimeForDisplay(entry.timestamp) : 'Not recorded'}\n`;
+        report += `Time: ${entry.timestamp ? formatTime(entry.timestamp) : 'Not recorded'}\n`;
         report += `Stress Level: ${entry.rating}/5\n`;
         if (entry.notes) {
           report += `Notes: ${entry.notes}\n`;
@@ -71,7 +72,7 @@ export const exportDataAsText = (): string => {
       
       skincareRoutines.forEach(entry => {
         report += `Date: ${new Date(entry.date).toLocaleDateString()}\n`;
-        report += `Reminder Time: ${formatTimeForDisplay(entry.reminderTime)}\n`;
+        report += `Reminder Time: ${formatTime(entry.reminderTime)}\n`;
         report += `Products Used:\n`;
         if (entry.serum1) report += "- Serum 1\n";
         if (entry.serum2) report += "- Serum 2\n";
