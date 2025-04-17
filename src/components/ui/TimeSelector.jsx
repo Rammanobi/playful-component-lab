@@ -3,11 +3,24 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 
+/**
+ * @typedef {Object} TimeSelectorProps
+ * @property {string} label - Label for the time selector
+ * @property {string} value - Current selected time value
+ * @property {function} onChange - Function to handle time change
+ * @property {string} [className] - Optional CSS class
+ * @property {string} [id] - Optional id for the select element
+ */
+
+/**
+ * @param {TimeSelectorProps} props
+ */
 const TimeSelector = ({ 
   label, 
   value, 
   onChange,
-  className
+  className,
+  id
 }) => {
   // Generate time options in 30-minute intervals
   const timeOptions = [];
@@ -21,9 +34,10 @@ const TimeSelector = ({
 
   return (
     <div className={cn("mb-4", className)}>
-      {label && <label className="label-text block mb-2">{label}</label>}
+      {label && <label className="label-text block mb-2" htmlFor={id}>{label}</label>}
       <div className="relative">
         <select
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="time-select w-full h-10 px-3 border rounded-md pr-10"

@@ -8,13 +8,15 @@ interface TimeSelectorProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  id?: string; // Added id prop to interface
 }
 
 const TimeSelector: React.FC<TimeSelectorProps> = ({ 
   label, 
   value, 
   onChange,
-  className
+  className,
+  id // Added id to destructuring
 }) => {
   // Generate time options in 30-minute intervals
   const timeOptions = [];
@@ -28,9 +30,10 @@ const TimeSelector: React.FC<TimeSelectorProps> = ({
 
   return (
     <div className={cn("mb-4", className)}>
-      {label && <label className="label-text block mb-2">{label}</label>}
+      {label && <label className="label-text block mb-2" htmlFor={id}>{label}</label>}
       <div className="relative">
         <select
+          id={id} // Added id to select element
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="time-select w-full h-10 px-3 border rounded-md pr-10"
