@@ -10,6 +10,9 @@ import { getCurrentDate } from '@/lib/utils';
 import DateSelector from '@/components/logs/DateSelector';
 import EditLogModal from '@/components/logs/EditLogModal';
 
+/**
+ * Page to display and manage different types of logs
+ */
 const LogDetails = () => {
   const { type } = useParams();
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
