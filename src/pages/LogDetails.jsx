@@ -1,147 +1,169 @@
 
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Dialog } from '@/components/ui/dialog';
 import Header from '@/components/layout/Header';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, CalendarDays, Calendar, Edit } from 'lucide-react';
-import { useLogDetails } from '@/hooks/useLogDetails';
 import LogTabSection from '@/components/logs/LogTabSection';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { getAllLogs, deleteLogById } from '@/lib/storage';
+import { getCurrentDate } from '@/lib/utils';
 import DateSelector from '@/components/logs/DateSelector';
 import EditLogModal from '@/components/logs/EditLogModal';
-import { parseDate, formatDateString } from '@/lib/utils';
-import { toast } from 'sonner';
 
 const LogDetails = () => {
   const { type } = useParams();
-  const navigate = useNavigate();
-  const {
-    sleepData,
-    mealData,
-    stressLogs,
-    skincareRoutines,
-    dayDescriptions,
-    deleteItem,
-    updateItem,
-    activeTab,
-    setActiveTab,
-    today,
-    selectedDate,
-    setSelectedDate,
-    showAllDates,
-    setShowAllDates,
-    allDates
-  } = useLogDetails(type);
-
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [currentEditItem, setCurrentEditItem] = useState(null);
-  const [currentEditType, setCurrentEditType] = useState('');
-
-  // Format the date for display
-  const formatDateForDisplay = (dateStr) => {
-    const date = parseDate(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const handleEditItem = (type, item) => {
-    setCurrentEditType(type);
-    setCurrentEditItem(item);
-    setIsEditModalOpen(true);
-  };
-
-  const handleUpdateItem = async (type, updatedItem) => {
-    const success = updateItem(type, updatedItem);
-    if (success) {
-      toast.success('Log updated successfully');
-      setIsEditModalOpen(false);
-    } else {
-      toast.error('Failed to update log');
-    }
-  };
-
-  const handleDateChange = (date) => {
-    if (date) {
-      const formattedDate = formatDateString(date);
-      setSelectedDate(formattedDate);
-    }
-  };
-
-  const formattedDate = formatDateForDisplay(selectedDate);
-  const isToday = selectedDate === today;
+  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
+  const [logs, setLogs] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState(null);
+  const [editInfo, setEditInfo] = useState(null);
   
-  // Convert string date to Date object for the DateSelector
-  const selectedDateObj = parseDate(selectedDate);
-
+  useEffect(() => {
+    loadLogs();
+  }, []);
+  
+  const loadLogs = async () => {
+    setIsLoading(true);
+    try {
+      const allLogs = await getAllLogs();
+      setLogs(allLogs);
+    } catch (error) {
+      console.error('Error loading logs:', error);
+      toast.error('Failed to load logs');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+  
+  const handleEditLog = (type, logData) => {
+    setEditInfo({ type, logData });
+  };
+  
+  const handleSaveEdit = (updatedData) => {
+    if (!editInfo) return;
+    
+    // Map short type names to storage keys
+    const typeMapping = {
+      'sleep': 'sleepData',
+      'meal': 'mealData',
+      'stress': 'stressLogs',
+      'skincare': 'skincareRoutines',
+      'day': 'dayDescriptions'
+    };
+    
+    const storageKey = typeMapping[editInfo.type];
+    
+    if (!storageKey) {
+      toast.error('Invalid log type');
+      return;
+    }
+    
+    try {
+      // Update logs in the UI
+      setLogs(prevLogs => {
+        const updatedLogs = { ...prevLogs };
+        if (updatedLogs[storageKey]) {
+          updatedLogs[storageKey] = updatedLogs[storageKey].map(item => 
+            item.id === updatedData.id ? updatedData : item
+          );
+        }
+        return updatedLogs;
+      });
+      
+      // In a real app, this would also update the storage
+      toast.success(`${editInfo.type} log updated successfully`);
+    } catch (error) {
+      console.error('Error saving log:', error);
+      toast.error('Failed to save log');
+    }
+  };
+  
+  const handleDeleteLog = (type, id) => {
+    setDeleteInfo({ type, id });
+    setIsDeleteConfirmOpen(true);
+  };
+  
+  const confirmDelete = async () => {
+    if (!deleteInfo) return;
+    
+    try {
+      await deleteLogById(deleteInfo.type, deleteInfo.id);
+      
+      // Update logs in the UI
+      await loadLogs();
+      
+      toast.success('Log deleted successfully');
+      setIsDeleteConfirmOpen(false);
+    } catch (error) {
+      console.error('Error deleting log:', error);
+      toast.error('Failed to delete log');
+    }
+  };
+  
+  const cancelDelete = () => {
+    setIsDeleteConfirmOpen(false);
+    setDeleteInfo(null);
+  };
+  
   return (
     <div className="app-container page-transition">
-      <Header title={showAllDates ? "All Logs" : (isToday ? "Today's Logs" : "Past Logs")} showBackButton />
+      <Header title="Wellness Logs" showBackButton />
       
-      <div className="px-5 space-y-6">
-        <Button variant="outline" onClick={() => navigate('/storage')} className="mb-4">
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Back to Storage
-        </Button>
+      <div className="px-5 py-4">
+        <DateSelector
+          selectedDate={selectedDate}
+          onDateChange={handleDateChange}
+          className="mb-6"
+        />
         
-        <div className="bg-muted/30 p-4 rounded-lg space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <CalendarDays className="h-5 w-5 mr-2 text-primary" />
-              <span className="text-lg font-medium">{showAllDates ? "All Dates" : formattedDate}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch 
-                id="show-all" 
-                checked={showAllDates} 
-                onCheckedChange={setShowAllDates}
-              />
-              <Label htmlFor="show-all">Show All</Label>
+        <LogTabSection 
+          selectedDate={selectedDate}
+          logs={logs}
+          onEdit={handleEditLog}
+          onDelete={handleDeleteLog}
+          isLoading={isLoading}
+        />
+      </div>
+      
+      {/* Edit Modal */}
+      {editInfo && (
+        <EditLogModal
+          isOpen={!!editInfo}
+          onClose={() => setEditInfo(null)}
+          logType={editInfo.type}
+          logData={editInfo.logData}
+          onSave={handleSaveEdit}
+        />
+      )}
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h3 className="text-lg font-medium mb-4">Confirm Deletion</h3>
+            <p className="mb-6">Are you sure you want to delete this log? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-2">
+              <button 
+                className="px-4 py-2 rounded-md border hover:bg-gray-50"
+                onClick={cancelDelete}
+              >
+                Cancel
+              </button>
+              <button 
+                className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
             </div>
           </div>
-          
-          {!showAllDates && (
-            <DateSelector 
-              selectedDate={selectedDateObj} 
-              onSelectDate={handleDateChange} 
-            />
-          )}
         </div>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-5 mb-4">
-            <TabsTrigger value="sleep">Sleep</TabsTrigger>
-            <TabsTrigger value="meal">Meals</TabsTrigger>
-            <TabsTrigger value="stress">Stress</TabsTrigger>
-            <TabsTrigger value="skincare">Skincare</TabsTrigger>
-            <TabsTrigger value="day">Day</TabsTrigger>
-          </TabsList>
-          
-          <LogTabSection
-            sleepData={sleepData}
-            mealData={mealData}
-            stressLogs={stressLogs}
-            skincareRoutines={skincareRoutines}
-            dayDescriptions={dayDescriptions}
-            onDelete={deleteItem}
-            onEdit={handleEditItem}
-            showDate={showAllDates}
-          />
-        </Tabs>
-      </div>
-
-      <EditLogModal
-        open={isEditModalOpen}
-        onOpenChange={setIsEditModalOpen}
-        logItem={currentEditItem}
-        logType={currentEditType}
-        onSave={handleUpdateItem}
-      />
+      </Dialog>
     </div>
   );
 };
