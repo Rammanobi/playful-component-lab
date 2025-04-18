@@ -10,9 +10,6 @@ import { getCurrentDate } from '@/lib/utils';
 import DateSelector from '@/components/logs/DateSelector';
 import EditLogModal from '@/components/logs/EditLogModal';
 
-/**
- * Page to display and manage different types of logs
- */
 const LogDetails = () => {
   const { type } = useParams();
   const [selectedDate, setSelectedDate] = useState(getCurrentDate());
@@ -50,7 +47,6 @@ const LogDetails = () => {
   const handleSaveEdit = (updatedData) => {
     if (!editInfo) return;
     
-    // Map short type names to storage keys
     const typeMapping = {
       'sleep': 'sleepData',
       'meal': 'mealData',
@@ -67,7 +63,6 @@ const LogDetails = () => {
     }
     
     try {
-      // Update logs in the UI
       setLogs(prevLogs => {
         const updatedLogs = { ...prevLogs };
         if (updatedLogs[storageKey]) {
@@ -78,7 +73,6 @@ const LogDetails = () => {
         return updatedLogs;
       });
       
-      // In a real app, this would also update the storage
       toast.success(`${editInfo.type} log updated successfully`);
     } catch (error) {
       console.error('Error saving log:', error);
@@ -96,10 +90,7 @@ const LogDetails = () => {
     
     try {
       await deleteLogById(deleteInfo.type, deleteInfo.id);
-      
-      // Update logs in the UI
       await loadLogs();
-      
       toast.success('Log deleted successfully');
       setIsDeleteConfirmOpen(false);
     } catch (error) {
@@ -112,7 +103,7 @@ const LogDetails = () => {
     setIsDeleteConfirmOpen(false);
     setDeleteInfo(null);
   };
-  
+
   return (
     <div className="app-container page-transition">
       <Header title="Wellness Logs" showBackButton />
@@ -133,7 +124,6 @@ const LogDetails = () => {
         />
       </div>
       
-      {/* Edit Modal */}
       {editInfo && (
         <EditLogModal
           isOpen={!!editInfo}
@@ -144,7 +134,6 @@ const LogDetails = () => {
         />
       )}
       
-      {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full">
