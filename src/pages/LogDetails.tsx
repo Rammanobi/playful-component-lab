@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, CalendarDays, Calendar, Edit } from 'lucide-react';
+import { ChevronLeft, CalendarDays, Calendar } from 'lucide-react';
 import { useLogDetails } from '@/hooks/useLogDetails';
 import LogTabSection from '@/components/logs/LogTabSection';
 import { Switch } from '@/components/ui/switch';
