@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -23,34 +24,38 @@ const SkinCare = () => {
   
   // Check if today's data already exists
   useEffect(() => {
-    const todayData = getTodayData();
-    if (todayData) {
-      setReminderTime(todayData.reminderTime);
-      setSerum1(todayData.serum1);
-      setSerum2(todayData.serum2);
-      setSunscreen(todayData.sunscreen);
-      setMoisturizer(todayData.moisturizer);
-      
-      // Set up reminder notification
-      const [hours, minutes] = todayData.reminderTime.split(':');
-      const reminderTime = new Date();
-      reminderTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
-      
-      if (reminderTime > new Date()) {
-        const timeoutMs = reminderTime.getTime() - new Date().getTime();
-        setTimeout(() => {
-          showReminderNotification(
-            "Skincare Routine Reminder",
-            "Time for your skincare routine!"
-          );
-        }, timeoutMs);
+    const fetchTodayData = async () => {
+      const todayData = await getTodayData();
+      if (todayData) {
+        setReminderTime(todayData.reminderTime);
+        setSerum1(todayData.serum1);
+        setSerum2(todayData.serum2);
+        setSunscreen(todayData.sunscreen);
+        setMoisturizer(todayData.moisturizer);
+        
+        // Set up reminder notification
+        const [hours, minutes] = todayData.reminderTime.split(':');
+        const reminderTime = new Date();
+        reminderTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+        
+        if (reminderTime > new Date()) {
+          const timeoutMs = reminderTime.getTime() - new Date().getTime();
+          setTimeout(() => {
+            showReminderNotification(
+              "Skincare Routine Reminder",
+              "Time for your skincare routine!"
+            );
+          }, timeoutMs);
+        }
       }
-    }
+    };
+    
+    fetchTodayData();
   }, []);
 
   // Helper function to get today's data
-  const getTodayData = () => {
-    const routines = getSkincareRoutines();
+  const getTodayData = async () => {
+    const routines = await getSkincareRoutines();
     const today = getCurrentDate();
     return routines.find(routine => routine.date === today);
   };
@@ -114,6 +119,7 @@ const SkinCare = () => {
             label="Reminder Time:"
             value={reminderTime}
             onChange={setReminderTime}
+            id="reminderTime"
           />
         </Card>
         

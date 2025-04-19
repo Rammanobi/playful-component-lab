@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -20,27 +21,31 @@ const SleepTracking = () => {
   
   // Check if today's data already exists
   useEffect(() => {
-    const todayData = getTodayData<SleepData>(getSleepData);
-    if (todayData) {
-      setMorningReminder(todayData.morningReminder);
-      setHoursSlept(todayData.hoursSlept.toString());
-      setQuality(todayData.quality);
-      
-      // Set up reminder notification
-      const [hours, minutes] = todayData.morningReminder.split(':');
-      const reminderTime = new Date();
-      reminderTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
-      
-      if (reminderTime > new Date()) {
-        const timeoutMs = reminderTime.getTime() - new Date().getTime();
-        setTimeout(() => {
-          showReminderNotification(
-            "Sleep Tracking Reminder",
-            "Don't forget to log your sleep data!"
-          );
-        }, timeoutMs);
+    const fetchTodayData = async () => {
+      const todayData = await getTodayData<SleepData>(getSleepData);
+      if (todayData) {
+        setMorningReminder(todayData.morningReminder);
+        setHoursSlept(todayData.hoursSlept.toString());
+        setQuality(todayData.quality);
+        
+        // Set up reminder notification
+        const [hours, minutes] = todayData.morningReminder.split(':');
+        const reminderTime = new Date();
+        reminderTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+        
+        if (reminderTime > new Date()) {
+          const timeoutMs = reminderTime.getTime() - new Date().getTime();
+          setTimeout(() => {
+            showReminderNotification(
+              "Sleep Tracking Reminder",
+              "Don't forget to log your sleep data!"
+            );
+          }, timeoutMs);
+        }
       }
-    }
+    };
+    
+    fetchTodayData();
   }, []);
 
   const handleSubmit = async () => {
@@ -88,6 +93,7 @@ const SleepTracking = () => {
             label="Morning Reminder:"
             value={morningReminder}
             onChange={setMorningReminder}
+            id="morningReminder"
           />
         </Card>
 

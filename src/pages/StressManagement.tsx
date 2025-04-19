@@ -18,11 +18,15 @@ const StressManagement = () => {
   
   // Check if today's data already exists
   useEffect(() => {
-    const todayData = getTodayData<StressLog>(getStressLogs);
-    if (todayData) {
-      setRating(todayData.rating);
-      setNotes(todayData.notes);
-    }
+    const fetchTodayData = async () => {
+      const todayData = await getTodayData<StressLog>(getStressLogs);
+      if (todayData) {
+        setRating(todayData.rating);
+        setNotes(todayData.notes);
+      }
+    };
+    
+    fetchTodayData();
   }, []);
 
   const handleSubmit = async () => {
