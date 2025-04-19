@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, CalendarDays, Calendar } from 'lucide-react';
+import { ChevronLeft, CalendarDays, Loader2 } from 'lucide-react';
 import { useLogDetails } from '@/hooks/useLogDetails';
 import LogTabSection from '@/components/logs/LogTabSection';
 import { Switch } from '@/components/ui/switch';
@@ -32,8 +32,9 @@ const LogDetails = () => {
     setSelectedDate,
     showAllDates,
     setShowAllDates,
-    allDates
-  } = useLogDetails(type);
+    allDates,
+    isLoading
+  } = useLogDetails(type as string);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentEditItem, setCurrentEditItem] = useState<any>(null);
@@ -57,7 +58,7 @@ const LogDetails = () => {
   };
 
   const handleUpdateItem = async (type: string, updatedItem: any) => {
-    const success = updateItem(type, updatedItem);
+    const success = await updateItem(type, updatedItem);
     if (success) {
       toast.success('Log updated successfully');
       setIsEditModalOpen(false);
@@ -113,26 +114,33 @@ const LogDetails = () => {
           )}
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-5 mb-4">
-            <TabsTrigger value="sleep">Sleep</TabsTrigger>
-            <TabsTrigger value="meal">Meals</TabsTrigger>
-            <TabsTrigger value="stress">Stress</TabsTrigger>
-            <TabsTrigger value="skincare">Skincare</TabsTrigger>
-            <TabsTrigger value="day">Day</TabsTrigger>
-          </TabsList>
-          
-          <LogTabSection
-            sleepData={sleepData}
-            mealData={mealData}
-            stressLogs={stressLogs}
-            skincareRoutines={skincareRoutines}
-            dayDescriptions={dayDescriptions}
-            onDelete={deleteItem}
-            onEdit={handleEditItem}
-            showDate={showAllDates}
-          />
-        </Tabs>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-lg">Loading logs...</span>
+          </div>
+        ) : (
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-5 mb-4">
+              <TabsTrigger value="sleep">Sleep</TabsTrigger>
+              <TabsTrigger value="meal">Meals</TabsTrigger>
+              <TabsTrigger value="stress">Stress</TabsTrigger>
+              <TabsTrigger value="skincare">Skincare</TabsTrigger>
+              <TabsTrigger value="day">Day</TabsTrigger>
+            </TabsList>
+            
+            <LogTabSection
+              sleepData={sleepData}
+              mealData={mealData}
+              stressLogs={stressLogs}
+              skincareRoutines={skincareRoutines}
+              dayDescriptions={dayDescriptions}
+              onDelete={deleteItem}
+              onEdit={handleEditItem}
+              showDate={showAllDates}
+            />
+          </Tabs>
+        )}
       </div>
 
       <EditLogModal

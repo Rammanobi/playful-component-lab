@@ -4,31 +4,44 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Header from '@/components/layout/Header';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveDayDescription, getTodayData, getDayDescriptions } from '@/lib/storage';
 import { DayDescription as DayDescriptionType } from '@/lib/types';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DayDescription = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [todayData, setTodayData] = useState<DayDescriptionType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Check if today's data already exists
   useEffect(() => {
-    loadTodayData();
-  }, []);
+    if (user) {
+      loadTodayData();
+    }
+  }, [user]);
   
-  const loadTodayData = () => {
-    const data = getTodayData<DayDescriptionType>(getDayDescriptions);
-    if (data) {
-      setTodayData(data);
-      setDescription(data.description);
-    } else {
-      setTodayData(null);
-      setDescription('');
+  const loadTodayData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getTodayData<DayDescriptionType>(getDayDescriptions);
+      if (data) {
+        setTodayData(data);
+        setDescription(data.description);
+      } else {
+        setTodayData(null);
+        setDescription('');
+      }
+    } catch (error) {
+      console.error('Error loading today data:', error);
+      toast.error('Failed to load today data');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,7 +69,7 @@ const DayDescription = () => {
       
       await saveDayDescription(dayData);
       toast.success('Day description saved successfully');
-      loadTodayData();
+      await loadTodayData();
     } catch (error) {
       console.error('Error saving day description:', error);
       toast.error('Failed to save day description');
@@ -67,12 +80,25 @@ const DayDescription = () => {
   
   const handleRefresh = () => {
     setIsLoading(true);
-    setTimeout(() => {
-      loadTodayData();
-      setIsLoading(false);
+    setTimeout(async () => {
+      await loadTodayData();
       toast.success('Data refreshed');
     }, 500);
   };
+
+  if (!user) {
+    return (
+      <div className="app-container page-transition">
+        <Header title="Day Description" showBackButton />
+        <div className="px-5 py-12 text-center">
+          <p>Please log in to access this feature.</p>
+          <Button onClick={() => navigate('/auth')} className="mt-4">
+            Go to Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container page-transition">
@@ -108,7 +134,12 @@ const DayDescription = () => {
           onClick={handleSubmit}
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Submitting...
+            </>
+          ) : 'Submit'}
         </button>
         
         <div className="mt-8">
@@ -125,8 +156,13 @@ const DayDescription = () => {
             </button>
           </div>
           
-          {todayData ? (
-            <Card>
+          {isLoading ? (
+            <Card className="py-6 flex justify-center items-center">
+              <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+              <span>Loading...</span>
+            </Card>
+          ) : todayData ? (
+            <Card className="p-4">
               <p className="text-app-darkGray whitespace-pre-wrap">{todayData.description}</p>
               <div className="text-sm text-app-lightText mt-4">
                 Saved on: {new Date(todayData.date).toLocaleDateString()} at {todayData.timestamp || 'unknown time'}

@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      day_descriptions: {
+        Row: {
+          date: string
+          description: string
+          id: string
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          date: string
+          description: string
+          id?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          date?: string
+          description?: string
+          id?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      meal_logs: {
+        Row: {
+          date: string
+          description: string | null
+          id: string
+          time: string
+          timestamp: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          date: string
+          description?: string | null
+          id?: string
+          time: string
+          timestamp?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          date?: string
+          description?: string | null
+          id?: string
+          time?: string
+          timestamp?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -36,6 +90,99 @@ export type Database = {
           is_admin?: boolean | null
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      skincare_logs: {
+        Row: {
+          date: string
+          id: string
+          moisturizer: boolean | null
+          reminder_time: string
+          serum1: boolean | null
+          serum2: boolean | null
+          sunscreen: boolean | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          date: string
+          id?: string
+          moisturizer?: boolean | null
+          reminder_time: string
+          serum1?: boolean | null
+          serum2?: boolean | null
+          sunscreen?: boolean | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          date?: string
+          id?: string
+          moisturizer?: boolean | null
+          reminder_time?: string
+          serum1?: boolean | null
+          serum2?: boolean | null
+          sunscreen?: boolean | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      sleep_logs: {
+        Row: {
+          date: string
+          hours_slept: number
+          id: string
+          morning_reminder: string | null
+          quality: string
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          date: string
+          hours_slept: number
+          id?: string
+          morning_reminder?: string | null
+          quality: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          date?: string
+          hours_slept?: number
+          id?: string
+          morning_reminder?: string | null
+          quality?: string
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      stress_logs: {
+        Row: {
+          date: string
+          id: string
+          notes: string | null
+          rating: number
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          date: string
+          id?: string
+          notes?: string | null
+          rating: number
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          date?: string
+          id?: string
+          notes?: string | null
+          rating?: number
+          timestamp?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

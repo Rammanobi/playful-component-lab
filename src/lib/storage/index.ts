@@ -1,9 +1,28 @@
+// Export storage functions from Supabase
+export { 
+  getSleepData,
+  saveSleepData,
+  updateSleepData,
+  deleteSleepData,
+  getMealData,
+  saveMealData,
+  updateMealData,
+  deleteMealData,
+  getStressLogs,
+  saveStressLog,
+  updateStressLog,
+  deleteStressLog,
+  getSkincareRoutines,
+  saveSkincareRoutine,
+  updateSkincareRoutine,
+  deleteSkincareRoutine,
+  getDayDescriptions,
+  saveDayDescription,
+  updateDayDescription,
+  deleteDayDescription,
+  getTodayData
+} from '../supabase/storage';
 
-// Export all storage functions from this central file
-export { getTodayData, getStorageSize, getLastBackupDate, setLastBackupDate, clearAllStorage } from './utils';
-export { getSleepData, saveSleepData, updateSleepData } from './sleep';
-export { getMealData, saveMealData, updateMealData } from './meal';
-export { getStressLogs, saveStressLog, updateStressLog } from './stress';
-export { getSkincareRoutines, saveSkincareRoutine, updateSkincareRoutine } from './skincare';
-export { getDayDescriptions, saveDayDescription, updateDayDescription } from './day';
+// Keep the utility and backup functions
+export { getStorageSize, getLastBackupDate, setLastBackupDate, clearAllStorage } from './utils';
 export { createBackup, exportDataAsText, importData } from './backup';
