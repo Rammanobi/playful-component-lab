@@ -13,7 +13,7 @@ import StressManagement from "./pages/StressManagement";
 import SkinCare from "./pages/SkinCare";
 import DayDescription from "./pages/DayDescription";
 import Storage from "./pages/Storage";
-import LogDetails from "./pages/LogDetails";
+import LogDetails from "./pages/LogDetails"; // Using the TypeScript version directly
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
