@@ -116,8 +116,11 @@ const LogDetails = () => {
         />
         
         <LogTabSection 
-          selectedDate={selectedDate}
-          logs={logs}
+          sleepData={logs.sleepData || []}
+          mealData={logs.mealData || []}
+          stressLogs={logs.stressLogs || []}
+          skincareRoutines={logs.skincareRoutines || []}
+          dayDescriptions={logs.dayDescriptions || []}
           onEdit={handleEditLog}
           onDelete={handleDeleteLog}
           isLoading={isLoading}
