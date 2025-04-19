@@ -15,6 +15,7 @@ import {
   updateDayDescription
 } from '@/lib/storage';
 import { safeStorage } from '@/lib/storage/utils';
+import { StorageKeys } from '@/lib/types';
 import { getCurrentDate, parseDate, formatDateString } from '@/lib/utils';
 
 interface UseLogDetailsReturn {
@@ -97,7 +98,6 @@ export const useLogDetails = (initialType?: string): UseLogDetailsReturn => {
 
   const deleteItem = (type: string, id: string) => {
     try {
-      const storageKey = `${type}Data`;
       const getData = () => {
         switch (type) {
           case 'sleep': return getSleepData();
@@ -114,10 +114,11 @@ export const useLogDetails = (initialType?: string): UseLogDetailsReturn => {
       
       // Adjust the key for stress and day which don't follow the [type]Data pattern
       const adjustedKey = type === 'stress' ? 'stressLogs' : 
-                          type === 'day' ? 'dayDescriptions' : 
-                          storageKey;
+                        type === 'day' ? 'dayDescriptions' : 
+                        `${type}Data`;
       
-      safeStorage.set(adjustedKey, newData);
+      // Cast the adjusted key to StorageKeys to satisfy TypeScript
+      safeStorage.set(adjustedKey as StorageKeys, newData);
       loadData();
       toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} record deleted successfully`);
     } catch (error) {
