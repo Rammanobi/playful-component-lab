@@ -57,13 +57,15 @@ const LogDetails = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateItem = async (type: string, updatedItem: any) => {
-    const success = await updateItem(type, updatedItem);
-    if (success) {
+  const handleUpdateItem = async (type: string, updatedItem: any): Promise<boolean> => {
+    try {
+      await updateItem(type, updatedItem);
       toast.success('Log updated successfully');
       setIsEditModalOpen(false);
-    } else {
+      return true;
+    } catch (error) {
       toast.error('Failed to update log');
+      return false;
     }
   };
 
