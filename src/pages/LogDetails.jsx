@@ -111,7 +111,7 @@ const LogDetails = () => {
       <div className="px-5 py-4">
         <DateSelector
           selectedDate={selectedDate}
-          onDateChange={handleDateChange}
+          onSelectDate={handleDateChange}
           className="mb-6"
         />
         
@@ -126,10 +126,10 @@ const LogDetails = () => {
       
       {editInfo && (
         <EditLogModal
-          isOpen={!!editInfo}
-          onClose={() => setEditInfo(null)}
+          open={!!editInfo}
+          onOpenChange={() => setEditInfo(null)}
           logType={editInfo.type}
-          logData={editInfo.logData}
+          logItem={editInfo.logData}
           onSave={handleSaveEdit}
         />
       )}
