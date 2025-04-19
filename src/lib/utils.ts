@@ -38,3 +38,18 @@ export const formatDateForDisplay = (dateStr: string) => {
     day: 'numeric'
   });
 };
+
+// Add back the formatTime function
+export const formatTime = (timeString: string): string => {
+  if (!timeString) return '';
+  
+  // Time might be in HH:MM format or just HH
+  const parts = timeString.split(':');
+  let hour = parseInt(parts[0], 10);
+  const minute = parts.length > 1 ? parts[1] : '00';
+  
+  const period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12; // Convert to 12h format
+  
+  return `${hour}:${minute} ${period}`;
+};
