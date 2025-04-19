@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -7,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveSkincareRoutine, getSkincareRoutines } from '@/lib/storage';
+import { showReminderNotification } from '@/utils/notifications';
 import { SkincareRoutine } from '@/lib/types';
 import { Check } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -30,6 +30,21 @@ const SkinCare = () => {
       setSerum2(todayData.serum2);
       setSunscreen(todayData.sunscreen);
       setMoisturizer(todayData.moisturizer);
+      
+      // Set up reminder notification
+      const [hours, minutes] = todayData.reminderTime.split(':');
+      const reminderTime = new Date();
+      reminderTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+      
+      if (reminderTime > new Date()) {
+        const timeoutMs = reminderTime.getTime() - new Date().getTime();
+        setTimeout(() => {
+          showReminderNotification(
+            "Skincare Routine Reminder",
+            "Time for your skincare routine!"
+          );
+        }, timeoutMs);
+      }
     }
   }, []);
 

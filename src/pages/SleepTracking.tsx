@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -8,6 +7,7 @@ import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveSleepData, getTodayData, getSleepData } from '@/lib/storage';
 import { SleepData } from '@/lib/types';
+import { showReminderNotification } from '@/utils/notifications';
 
 const sleepQualityOptions = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
 
@@ -25,6 +25,21 @@ const SleepTracking = () => {
       setMorningReminder(todayData.morningReminder);
       setHoursSlept(todayData.hoursSlept.toString());
       setQuality(todayData.quality);
+      
+      // Set up reminder notification
+      const [hours, minutes] = todayData.morningReminder.split(':');
+      const reminderTime = new Date();
+      reminderTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+      
+      if (reminderTime > new Date()) {
+        const timeoutMs = reminderTime.getTime() - new Date().getTime();
+        setTimeout(() => {
+          showReminderNotification(
+            "Sleep Tracking Reminder",
+            "Don't forget to log your sleep data!"
+          );
+        }, timeoutMs);
+      }
     }
   }, []);
 
