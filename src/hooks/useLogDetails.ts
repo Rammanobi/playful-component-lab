@@ -15,26 +15,41 @@ import {
   updateDayDescription
 } from '@/lib/storage';
 import { safeStorage } from '@/lib/storage/utils';
-import { SleepData, MealData, StressLog, SkincareRoutine, DayDescription, StorageKeys } from '@/lib/types';
-import { getCurrentDate } from '@/lib/utils';
+import { getCurrentDate, parseDate, formatDateString } from '@/lib/utils';
 
-type LogType = 'sleep' | 'meal' | 'stress' | 'skincare' | 'day';
+interface UseLogDetailsReturn {
+  sleepData: any[];
+  mealData: any[];
+  stressLogs: any[];
+  skincareRoutines: any[];
+  dayDescriptions: any[];
+  deleteItem: (type: string, id: string) => void;
+  updateItem: (type: string, updatedItem: any) => boolean;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  today: string;
+  selectedDate: string;
+  setSelectedDate: (date: string) => void;
+  showAllDates: boolean;
+  setShowAllDates: (show: boolean) => void;
+  allDates: string[];
+}
 
-export const useLogDetails = (initialType: string | undefined) => {
+export const useLogDetails = (initialType?: string): UseLogDetailsReturn => {
   const navigate = useNavigate();
-  const validTypes: LogType[] = ['sleep', 'meal', 'stress', 'skincare', 'day'];
-  const defaultType: LogType = validTypes.includes(initialType as LogType) 
-    ? (initialType as LogType) 
+  const validTypes = ['sleep', 'meal', 'stress', 'skincare', 'day'];
+  const defaultType = initialType && validTypes.includes(initialType) 
+    ? initialType 
     : 'sleep';
     
-  const [activeTab, setActiveTab] = useState<string>(defaultType);
-  const [sleepData, setSleepData] = useState<SleepData[]>([]);
-  const [mealData, setMealData] = useState<MealData[]>([]);
-  const [stressLogs, setStressLogs] = useState<StressLog[]>([]);
-  const [skincareRoutines, setSkincareRoutines] = useState<SkincareRoutine[]>([]);
-  const [dayDescriptions, setDayDescriptions] = useState<DayDescription[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(getCurrentDate());
-  const [showAllDates, setShowAllDates] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState(defaultType);
+  const [sleepData, setSleepData] = useState<any[]>([]);
+  const [mealData, setMealData] = useState<any[]>([]);
+  const [stressLogs, setStressLogs] = useState<any[]>([]);
+  const [skincareRoutines, setSkincareRoutines] = useState<any[]>([]);
+  const [dayDescriptions, setDayDescriptions] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
+  const [showAllDates, setShowAllDates] = useState(false);
   
   const today = getCurrentDate();
   const allDates = getAllUniqueDates();
@@ -82,7 +97,7 @@ export const useLogDetails = (initialType: string | undefined) => {
 
   const deleteItem = (type: string, id: string) => {
     try {
-      const storageKey = `${type}Data` as StorageKeys;
+      const storageKey = `${type}Data`;
       const getData = () => {
         switch (type) {
           case 'sleep': return getSleepData();
@@ -111,23 +126,23 @@ export const useLogDetails = (initialType: string | undefined) => {
     }
   };
 
-  const updateItem = (type: string, updatedItem: any) => {
+  const updateItem = (type: string, updatedItem: any): boolean => {
     try {
       switch (type) {
         case 'sleep':
-          updateSleepData(updatedItem as SleepData);
+          updateSleepData(updatedItem);
           break;
         case 'meal': 
-          updateMealData(updatedItem as MealData);
+          updateMealData(updatedItem);
           break;
         case 'stress': 
-          updateStressLog(updatedItem as StressLog);
+          updateStressLog(updatedItem);
           break;
         case 'skincare': 
-          updateSkincareRoutine(updatedItem as SkincareRoutine);
+          updateSkincareRoutine(updatedItem);
           break;
         case 'day': 
-          updateDayDescription(updatedItem as DayDescription);
+          updateDayDescription(updatedItem);
           break;
         default:
           throw new Error(`Unknown log type: ${type}`);
