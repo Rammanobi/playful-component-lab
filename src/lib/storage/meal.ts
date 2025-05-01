@@ -20,3 +20,9 @@ export const updateMealData = (updatedData: MealData): void => {
     safeStorage.set<MealData>('mealData', data);
   }
 };
+
+export const deleteMealData = (id: string): void => {
+  const data = getMealData();
+  const filteredData = data.filter(item => item.id !== id);
+  safeStorage.set<MealData>('mealData', filteredData);
+};

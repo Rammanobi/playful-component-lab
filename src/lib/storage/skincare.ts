@@ -20,3 +20,9 @@ export const updateSkincareRoutine = (updatedData: SkincareRoutine): void => {
     safeStorage.set<SkincareRoutine>('skincareRoutines', routines);
   }
 };
+
+export const deleteSkincareRoutine = (id: string): void => {
+  const routines = getSkincareRoutines();
+  const filteredRoutines = routines.filter(item => item.id !== id);
+  safeStorage.set<SkincareRoutine>('skincareRoutines', filteredRoutines);
+};

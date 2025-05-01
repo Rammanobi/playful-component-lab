@@ -20,3 +20,9 @@ export const updateDayDescription = (updatedData: DayDescription): void => {
     safeStorage.set<DayDescription>('dayDescriptions', descriptions);
   }
 };
+
+export const deleteDayDescription = (id: string): void => {
+  const descriptions = getDayDescriptions();
+  const filteredDescriptions = descriptions.filter(item => item.id !== id);
+  safeStorage.set<DayDescription>('dayDescriptions', filteredDescriptions);
+};

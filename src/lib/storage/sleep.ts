@@ -20,3 +20,9 @@ export const updateSleepData = (updatedData: SleepData): void => {
     safeStorage.set<SleepData>('sleepData', data);
   }
 };
+
+export const deleteSleepData = (id: string): void => {
+  const data = getSleepData();
+  const filteredData = data.filter(item => item.id !== id);
+  safeStorage.set<SleepData>('sleepData', filteredData);
+};

@@ -20,3 +20,9 @@ export const updateStressLog = (updatedData: StressLog): void => {
     safeStorage.set<StressLog>('stressLogs', logs);
   }
 };
+
+export const deleteStressLog = (id: string): void => {
+  const logs = getStressLogs();
+  const filteredLogs = logs.filter(item => item.id !== id);
+  safeStorage.set<StressLog>('stressLogs', filteredLogs);
+};
