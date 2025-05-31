@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 import { BellRing } from "lucide-react";
 
-export const showReminderNotification = (title, message) => {
+export const showReminderNotification = (title: string, message: string) => {
   toast(title, {
     description: message,
     icon: <BellRing className="h-5 w-5" />,
