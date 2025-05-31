@@ -57,15 +57,14 @@ const LogDetails = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateItem = async (type: string, updatedItem: any): Promise<boolean> => {
+  // Fix the function signature to match EditLogModal's onSave prop
+  const handleUpdateItem = async (updatedItem: any): Promise<void> => {
     try {
-      await updateItem(type, updatedItem);
+      await updateItem(currentEditType, updatedItem);
       toast.success('Log updated successfully');
       setIsEditModalOpen(false);
-      return true;
     } catch (error) {
       toast.error('Failed to update log');
-      return false;
     }
   };
 
