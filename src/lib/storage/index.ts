@@ -28,6 +28,20 @@ export {
 export { getStorageSize, getLastBackupDate, setLastBackupDate, clearAllStorage } from './utils';
 export { createBackup, exportDataAsText, importData } from './backup';
 
+// Import the functions we need for the unified functions
+import {
+  getSleepData,
+  getMealData,
+  getStressLogs,
+  getSkincareRoutines,
+  getDayDescriptions,
+  deleteSleepData,
+  deleteMealData,
+  deleteStressLog,
+  deleteSkincareRoutine,
+  deleteDayDescription
+} from '../supabase/storage';
+
 // Add unified functions for the LogDetails components
 export const getAllLogs = async () => {
   const [sleepData, mealData, stressLogs, skincareRoutines, dayDescriptions] = await Promise.all([
