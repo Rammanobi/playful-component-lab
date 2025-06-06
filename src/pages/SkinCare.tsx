@@ -7,11 +7,13 @@ import { Card } from '@/components/ui/card';
 import TimeSelector from '@/components/ui/TimeSelector';
 import { generateId, getCurrentDate } from '@/lib/utils';
 import { saveSkincareRoutine, getSkincareRoutines } from '@/lib/storage';
-import { showReminderNotification } from '@/utils/notifications';
 import { SkincareRoutine } from '@/lib/types';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Clock, Sun, Sunset, Moon } from 'lucide-react';
+import MorningRoutine from '@/components/skincare/MorningRoutine';
+import MiddayRoutine from '@/components/skincare/MiddayRoutine';
+import EveningRoutine from '@/components/skincare/EveningRoutine';
+import NightRoutine from '@/components/skincare/NightRoutine';
+import SmartTips from '@/components/skincare/SmartTips';
 
 const SkinCare = () => {
   const navigate = useNavigate();
@@ -131,42 +133,6 @@ const SkinCare = () => {
     }
   };
 
-  const TimeSection = ({ title, time, icon: Icon, color, children }: {
-    title: string;
-    time: string;
-    icon: any;
-    color: string;
-    children: React.ReactNode;
-  }) => (
-    <Card className={`p-4 mb-4 border-l-4 ${color}`}>
-      <div className="flex items-center mb-3">
-        <Icon className="h-5 w-5 mr-2" />
-        <h3 className="text-lg font-medium">{title}</h3>
-        <span className="ml-auto text-sm text-gray-500">{time}</span>
-      </div>
-      {children}
-    </Card>
-  );
-
-  const TaskItem = ({ label, checked, onChange, description }: {
-    label: string;
-    checked: boolean;
-    onChange: (checked: boolean) => void;
-    description?: string;
-  }) => (
-    <div className="flex items-start space-x-3 mb-3">
-      <Checkbox checked={checked} onCheckedChange={onChange} className="mt-1" />
-      <div className="flex-1">
-        <label className="text-sm font-medium cursor-pointer" onClick={() => onChange(!checked)}>
-          {label}
-        </label>
-        {description && (
-          <p className="text-xs text-gray-500 mt-1">{description}</p>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <div className="app-container page-transition">
       <Header title={`Skincare Routine - ${currentDay}`} showBackButton />
@@ -183,143 +149,47 @@ const SkinCare = () => {
         </div>
 
         {/* Morning Routine */}
-        <TimeSection
-          title="Morning Routine"
-          time="8:00 AM"
-          icon={Sun}
-          color="border-l-yellow-400"
-        >
-          <div className="space-y-2">
-            <TaskItem
-              label="Use AHA Glow S Face Wash"
-              checked={ahaFaceWash}
-              onChange={setAhaFaceWash}
-            />
-            <TaskItem
-              label="Apply Pilgrim Tea Tree + Cica Toner"
-              checked={teaTreeToner}
-              onChange={setTeaTreeToner}
-            />
-            <TaskItem
-              label="Apply Vitamin B5 10% Moisturizer"
-              checked={vitaminB5Morning}
-              onChange={setVitaminB5Morning}
-            />
-            <TaskItem
-              label="Apply Photostable SPF 55++ Sunscreen"
-              checked={sunscreenMorning}
-              onChange={setSunscreenMorning}
-            />
-          </div>
-          <p className="text-xs text-gray-600 italic mt-3">
-            "You're refreshing your energy and clarity for the day."
-          </p>
-        </TimeSection>
+        <MorningRoutine
+          ahaFaceWash={ahaFaceWash}
+          setAhaFaceWash={setAhaFaceWash}
+          teaTreeToner={teaTreeToner}
+          setTeaTreeToner={setTeaTreeToner}
+          vitaminB5Morning={vitaminB5Morning}
+          setVitaminB5Morning={setVitaminB5Morning}
+          sunscreenMorning={sunscreenMorning}
+          setSunscreenMorning={setSunscreenMorning}
+        />
 
         {/* Midday Routine */}
-        <TimeSection
-          title="Midday Recharge"
-          time="1:00 PM"
-          icon={Clock}
-          color="border-l-orange-400"
-        >
-          <TaskItem
-            label="Reapply Photostable SPF 55++ Sunscreen"
-            checked={sunscreenReapply}
-            onChange={setSunscreenReapply}
-          />
-          <p className="text-xs text-gray-600 italic mt-3">
-            "Protected and ready to shine—your glow is your armor."
-          </p>
-        </TimeSection>
+        <MiddayRoutine
+          sunscreenReapply={sunscreenReapply}
+          setSunscreenReapply={setSunscreenReapply}
+        />
 
         {/* Evening Routine */}
-        <TimeSection
-          title={`Evening Actives - ${currentDay}`}
-          time="4:00-6:00 PM"
-          icon={Sunset}
-          color="border-l-pink-400"
-        >
-          {eveningRoutineType === 'pore' && (
-            <>
-              <TaskItem
-                label="Apply Pore Minimizing Serum (DermaCo)"
-                checked={poreSerum}
-                onChange={setPoreSerum}
-              />
-              <TaskItem
-                label="Apply Vitamin B5 10% Moisturizer"
-                checked={vitaminB5Evening}
-                onChange={setVitaminB5Evening}
-              />
-            </>
-          )}
-          
-          {eveningRoutineType === 'salicylic' && (
-            <>
-              <TaskItem
-                label="Apply Salicylic Acid Serum"
-                checked={salicylicSerum}
-                onChange={setSalicylicSerum}
-              />
-              <TaskItem
-                label="Apply Vitamin B5 10% Moisturizer"
-                checked={vitaminB5Evening}
-                onChange={setVitaminB5Evening}
-              />
-            </>
-          )}
-          
-          {eveningRoutineType === 'niacinamide' && (
-            <>
-              <TaskItem
-                label="Apply Niacinamide 10% Serum"
-                checked={niacinamideSerum}
-                onChange={setNiacinamideSerum}
-              />
-              <TaskItem
-                label="Apply Vitamin B5 10% Moisturizer"
-                checked={vitaminB5Evening}
-                onChange={setVitaminB5Evening}
-              />
-            </>
-          )}
-
-          {shouldShowClayMask() && (
-            <TaskItem
-              label="Dot & Key Clay Mask (6:30 PM)"
-              checked={clayMask}
-              onChange={setClayMask}
-              description="Replace serum on this day"
-            />
-          )}
-          
-          <p className="text-xs text-gray-600 italic mt-3">
-            "Every drop is a step toward clearer, healthier skin. You're glowing already!"
-          </p>
-        </TimeSection>
+        <EveningRoutine
+          currentDay={currentDay}
+          eveningRoutineType={eveningRoutineType}
+          shouldShowClayMask={shouldShowClayMask()}
+          poreSerum={poreSerum}
+          setPoreSerum={setPoreSerum}
+          salicylicSerum={salicylicSerum}
+          setSalicylicSerum={setSalicylicSerum}
+          niacinamideSerum={niacinamideSerum}
+          setNiacinamideSerum={setNiacinamideSerum}
+          clayMask={clayMask}
+          setClayMask={setClayMask}
+          vitaminB5Evening={vitaminB5Evening}
+          setVitaminB5Evening={setVitaminB5Evening}
+        />
 
         {/* Night Routine */}
-        <TimeSection
-          title="Night Wind-Down"
-          time="9:00 PM"
-          icon={Moon}
-          color="border-l-indigo-400"
-        >
-          <TaskItem
-            label="Apply Pilgrim Toner"
-            checked={pilgrimToner}
-            onChange={setPilgrimToner}
-          />
-          <TaskItem
-            label="Apply Vitamin B5 10% Moisturizer"
-            checked={vitaminB5Night}
-            onChange={setVitaminB5Night}
-          />
-          <p className="text-xs text-gray-600 italic mt-3">
-            "You've earned this rest. Your skin is healing and you deserve to glow."
-          </p>
-        </TimeSection>
+        <NightRoutine
+          pilgrimToner={pilgrimToner}
+          setPilgrimToner={setPilgrimToner}
+          vitaminB5Night={vitaminB5Night}
+          setVitaminB5Night={setVitaminB5Night}
+        />
 
         {/* Reminder Time Setting */}
         <Card className="p-4 bg-app-lightGray border border-gray-100 mb-4">
@@ -332,14 +202,7 @@ const SkinCare = () => {
         </Card>
 
         {/* Smart Tips */}
-        <Card className="p-4 bg-blue-50 border border-blue-200 mb-4">
-          <h4 className="font-medium text-blue-800 mb-2">💡 Smart Tips</h4>
-          <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Don't layer salicylic acid and clay mask on the same day</li>
-            <li>• Wait 2–3 mins after toner before applying serum</li>
-            <li>• Massage moisturizer gently for deeper absorption</li>
-          </ul>
-        </Card>
+        <SmartTips />
         
         <Button
           className="w-full"
