@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+import SupabaseLoginForm from '@/components/auth/SupabaseLoginForm';
+import SupabaseRegisterForm from '@/components/auth/SupabaseRegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import { useAuth } from '@/contexts/AuthContext';
@@ -67,20 +67,13 @@ const Auth = () => {
         </TabsList>
         
         <TabsContent value="login">
-          <LoginForm 
-            setIsLogin={setIsLogin => {
-              setActiveTab(setIsLogin ? "login" : "register");
-            }}
+          <SupabaseLoginForm 
             setIsForgotPassword={setIsForgotPassword} 
           />
         </TabsContent>
         
         <TabsContent value="register">
-          <RegisterForm 
-            setIsLogin={setIsLogin => {
-              setActiveTab(setIsLogin ? "login" : "register");
-            }}
-          />
+          <SupabaseRegisterForm />
         </TabsContent>
       </Tabs>
     );
