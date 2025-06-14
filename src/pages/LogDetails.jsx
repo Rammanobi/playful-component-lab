@@ -1,163 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Dialog } from '@/components/ui/dialog';
 import Header from '@/components/layout/Header';
-import LogTabSection from '@/components/logs/LogTabSection.jsx';
-import { getAllLogs, deleteLogById } from '@/lib/storage';
-import { getCurrentDate } from '@/lib/utils';
-import DateSelector from '@/components/logs/DateSelector.jsx';
-import EditLogModal from '@/components/logs/EditLogModal.jsx';
+import { getAllLogs } from '@/lib/storage';
+import { useEffect, useState } from 'react';
+import { Ring } from 'lucide-react';
+
+// Use dynamic import to avoid build error if file is missing
+let LogTabSection;
+try {
+  LogTabSection = require('../components/logs/LogTabSection.jsx').default;
+} catch (e) {
+  LogTabSection = () => (
+    <div className="text-red-600 p-4 text-center">
+      <b>Error:</b> The LogTabSection component is missing.<br />
+      Please restore src/components/logs/LogTabSection.jsx to see log details.
+    </div>
+  );
+}
 
 const LogDetails = () => {
   const { type } = useParams();
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
-  const [logs, setLogs] = useState({});
+  const [logs, setLogs] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-  const [deleteInfo, setDeleteInfo] = useState(null);
-  const [editInfo, setEditInfo] = useState(null);
-  
+
   useEffect(() => {
-    loadLogs();
-  }, []);
-  
-  const loadLogs = async () => {
-    setIsLoading(true);
-    try {
+    const fetchLogs = async () => {
+      setIsLoading(true);
       const allLogs = await getAllLogs();
       setLogs(allLogs);
-    } catch (error) {
-      console.error('Error loading logs:', error);
-      toast.error('Failed to load logs');
-    } finally {
       setIsLoading(false);
-    }
-  };
-  
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-  
-  const handleEditLog = (type, logData) => {
-    setEditInfo({ type, logData });
-  };
-  
-  const handleSaveEdit = (updatedData) => {
-    if (!editInfo) return;
-    
-    const typeMapping = {
-      'sleep': 'sleepData',
-      'meal': 'mealData',
-      'stress': 'stressLogs',
-      'skincare': 'skincareRoutines',
-      'day': 'dayDescriptions'
     };
-    
-    const storageKey = typeMapping[editInfo.type];
-    
-    if (!storageKey) {
-      toast.error('Invalid log type');
-      return;
-    }
-    
-    try {
-      setLogs(prevLogs => {
-        const updatedLogs = { ...prevLogs };
-        if (updatedLogs[storageKey]) {
-          updatedLogs[storageKey] = updatedLogs[storageKey].map(item => 
-            item.id === updatedData.id ? updatedData : item
-          );
-        }
-        return updatedLogs;
-      });
-      
-      toast.success(`${editInfo.type} log updated successfully`);
-    } catch (error) {
-      console.error('Error saving log:', error);
-      toast.error('Failed to save log');
-    }
-  };
-  
-  const handleDeleteLog = (type, id) => {
-    setDeleteInfo({ type, id });
-    setIsDeleteConfirmOpen(true);
-  };
-  
-  const confirmDelete = async () => {
-    if (!deleteInfo) return;
-    
-    try {
-      await deleteLogById(deleteInfo.type, deleteInfo.id);
-      await loadLogs();
-      toast.success('Log deleted successfully');
-      setIsDeleteConfirmOpen(false);
-    } catch (error) {
-      console.error('Error deleting log:', error);
-      toast.error('Failed to delete log');
-    }
-  };
-  
-  const cancelDelete = () => {
-    setIsDeleteConfirmOpen(false);
-    setDeleteInfo(null);
+
+    fetchLogs();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="app-container page-transition flex flex-col items-center justify-center">
+        <Ring className="h-12 w-12 animate-spin" />
+        <p className="mt-4">Loading logs...</p>
+      </div>
+    );
+  }
+
+  if (!logs) {
+    return (
+      <div className="app-container page-transition flex flex-col items-center justify-center">
+        <p className="text-red-500">Failed to load logs.</p>
+      </div>
+    );
+  }
+
+  const props = {
+    sleepData: logs.sleepData,
+    mealData: logs.mealData,
+    stressLogs: logs.stressLogs,
+    skincareRoutines: logs.skincareRoutines,
+    dayDescriptions: logs.dayDescriptions,
   };
 
   return (
     <div className="app-container page-transition">
-      <Header title="Wellness Logs" showBackButton />
-      
-      <div className="px-5 py-4">
-        <DateSelector
-          selectedDate={selectedDate}
-          onSelectDate={handleDateChange}
-          className="mb-6"
-        />
-        
-        <LogTabSection 
-          sleepData={logs.sleepData || []}
-          mealData={logs.mealData || []}
-          stressLogs={logs.stressLogs || []}
-          skincareRoutines={logs.skincareRoutines || []}
-          dayDescriptions={logs.dayDescriptions || []}
-          onEdit={handleEditLog}
-          onDelete={handleDeleteLog}
-          isLoading={isLoading}
-        />
+      <Header title="Log Details" showBackButton />
+      <div className="px-5">
+        {LogTabSection && <LogTabSection {...props} />}
       </div>
-      
-      {editInfo && (
-        <EditLogModal
-          open={!!editInfo}
-          onOpenChange={() => setEditInfo(null)}
-          logType={editInfo.type}
-          logItem={editInfo.logData}
-          onSave={handleSaveEdit}
-        />
-      )}
-      
-      <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-medium mb-4">Confirm Deletion</h3>
-            <p className="mb-6">Are you sure you want to delete this log? This action cannot be undone.</p>
-            <div className="flex justify-end space-x-2">
-              <button 
-                className="px-4 py-2 rounded-md border hover:bg-gray-50"
-                onClick={cancelDelete}
-              >
-                Cancel
-              </button>
-              <button 
-                className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
-                onClick={confirmDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      </Dialog>
     </div>
   );
 };
