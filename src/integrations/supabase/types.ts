@@ -15,21 +15,21 @@ export type Database = {
           description: string
           id: string
           timestamp: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           date: string
           description: string
           id?: string
           timestamp?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           date?: string
           description?: string
           id?: string
           timestamp?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -41,7 +41,7 @@ export type Database = {
           time: string
           timestamp: string | null
           title: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           date: string
@@ -50,7 +50,7 @@ export type Database = {
           time: string
           timestamp?: string | null
           title: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           date?: string
@@ -59,7 +59,7 @@ export type Database = {
           time?: string
           timestamp?: string | null
           title?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -103,7 +103,7 @@ export type Database = {
           serum2: boolean | null
           sunscreen: boolean | null
           timestamp: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           date: string
@@ -114,7 +114,7 @@ export type Database = {
           serum2?: boolean | null
           sunscreen?: boolean | null
           timestamp?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           date?: string
@@ -125,7 +125,7 @@ export type Database = {
           serum2?: boolean | null
           sunscreen?: boolean | null
           timestamp?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -137,7 +137,7 @@ export type Database = {
           morning_reminder: string | null
           quality: string
           timestamp: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           date: string
@@ -146,7 +146,7 @@ export type Database = {
           morning_reminder?: string | null
           quality: string
           timestamp?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           date?: string
@@ -155,7 +155,7 @@ export type Database = {
           morning_reminder?: string | null
           quality?: string
           timestamp?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -166,7 +166,7 @@ export type Database = {
           notes: string | null
           rating: number
           timestamp: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           date: string
@@ -174,7 +174,7 @@ export type Database = {
           notes?: string | null
           rating: number
           timestamp?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           date?: string
@@ -182,7 +182,7 @@ export type Database = {
           notes?: string | null
           rating?: number
           timestamp?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
