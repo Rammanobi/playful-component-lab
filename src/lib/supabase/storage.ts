@@ -37,9 +37,13 @@ export const getSleepData = async (): Promise<SleepData[]> => {
 
 export const saveSleepData = async (data: SleepData): Promise<void> => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { error } = await supabase
       .from('sleep_logs')
       .insert({
+        user_id: user.id,
         hours_slept: data.hoursSlept,
         quality: data.quality,
         morning_reminder: data.morningReminder,
@@ -117,9 +121,13 @@ export const getMealData = async (): Promise<MealData[]> => {
 
 export const saveMealData = async (data: MealData): Promise<void> => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { error } = await supabase
       .from('meal_logs')
       .insert({
+        user_id: user.id,
         title: data.title,
         description: data.description,
         time: data.time,
@@ -196,9 +204,13 @@ export const getStressLogs = async (): Promise<StressLog[]> => {
 
 export const saveStressLog = async (data: StressLog): Promise<void> => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { error } = await supabase
       .from('stress_logs')
       .insert({
+        user_id: user.id,
         rating: data.rating,
         notes: data.notes,
         date: data.date,
@@ -276,9 +288,13 @@ export const getSkincareRoutines = async (): Promise<SkincareRoutine[]> => {
 
 export const saveSkincareRoutine = async (data: SkincareRoutine): Promise<void> => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { error } = await supabase
       .from('skincare_logs')
       .insert({
+        user_id: user.id,
         reminder_time: data.reminderTime,
         serum1: data.serum1,
         serum2: data.serum2,
@@ -358,9 +374,13 @@ export const getDayDescriptions = async (): Promise<DayDescription[]> => {
 
 export const saveDayDescription = async (data: DayDescription): Promise<void> => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { error } = await supabase
       .from('day_descriptions')
       .insert({
+        user_id: user.id,
         description: data.description,
         date: data.date,
         timestamp: new Date().toISOString()
