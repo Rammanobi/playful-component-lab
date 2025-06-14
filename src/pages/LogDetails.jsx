@@ -1,14 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Dialog } from '@/components/ui/dialog';
 import Header from '@/components/layout/Header';
-import LogTabSection from '@/components/logs/LogTabSection';
+import LogTabSection from '@/components/logs/LogTabSection.jsx';
 import { getAllLogs, deleteLogById } from '@/lib/storage';
 import { getCurrentDate } from '@/lib/utils';
-import DateSelector from '@/components/logs/DateSelector';
-import EditLogModal from '@/components/logs/EditLogModal';
+import DateSelector from '@/components/logs/DateSelector.jsx';
+import EditLogModal from '@/components/logs/EditLogModal.jsx';
 
 const LogDetails = () => {
   const { type } = useParams();
