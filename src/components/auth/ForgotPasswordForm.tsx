@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
 } from '@/components/ui/form';
-import { checkEmailExists } from '@/lib/storage/auth';
+import { supabase } from '@/integrations/supabase/client';
 import FormFieldWithIcon from './FormFieldWithIcon';
 
 export const forgotPasswordSchema = z.object({
@@ -40,36 +40,28 @@ const ForgotPasswordForm = ({
     setIsLoading(true);
     
     try {
-      console.log('Checking email:', values.email);
+      console.log('Sending password reset email:', values.email);
       
-      // Check if email exists
-      if (!checkEmailExists(values.email)) {
-        toast.error("No account found with this email address");
-        setIsLoading(false);
-        return;
+      // Use Supabase's built-in password reset functionality
+      const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      });
+
+      if (error) {
+        toast.error("Failed to send reset email. Please check if the email address is correct.");
+        console.error('Password reset error:', error);
+      } else {
+        toast.success(`Password reset email sent to ${values.email}`);
+        toast.info("Please check your email for the reset link");
+        
+        // Store email for potential future use
+        setResetEmail(values.email);
+        
+        // Go back to login after successful request
+        setTimeout(() => {
+          setIsForgotPassword(false);
+        }, 2000);
       }
-      
-      // Store email for reset password
-      setResetEmail(values.email);
-      
-      // In a real app, this would send an actual email with OTP
-      toast.success(`Recovery email would be sent to ${values.email} in a real app`);
-      
-      // Generate and store OTP for simulation purposes
-      const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-      localStorage.setItem('resetOTP', generatedOTP);
-      
-      // In a real-world application, this would be server-side logic
-      // and the OTP would be sent to the user's actual email address
-      
-      // For demo purposes - show the OTP in a toast notification
-      // In a real app, this would never happen - it's just for demonstration
-      toast.info(`DEMO MODE: Your verification code is: ${generatedOTP}`);
-      
-      setTimeout(() => {
-        setIsForgotPassword(false);
-        setIsResetPassword(true);
-      }, 2000);
     } catch (error) {
       console.error('Forgot password error:', error);
       toast.error("Failed to process request");
@@ -91,16 +83,12 @@ const ForgotPasswordForm = ({
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : "Send Verification Code"}
+            {isLoading ? "Sending..." : "Send Reset Email"}
           </Button>
           
           <div className="mt-2 text-sm text-gray-500 text-center">
             <p>
-              In a real application, a verification code would be sent to your 
-              Gmail inbox to reset your password.
-            </p>
-            <p className="mt-1">
-              For this demo, the code will be displayed here instead.
+              A password reset link will be sent to your email address.
             </p>
           </div>
         </form>

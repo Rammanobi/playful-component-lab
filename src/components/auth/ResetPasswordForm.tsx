@@ -4,23 +4,15 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Lock, KeyRound, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Lock, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { saveUserCredentials } from '@/lib/storage/auth';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { supabase } from '@/integrations/supabase/client';
 import FormFieldWithIcon from './FormFieldWithIcon';
 
 const resetPasswordSchema = z.object({
-  otp: z.string().min(6, { message: "Please enter the 6-digit verification code" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   confirmPassword: z.string().min(6, { message: "Password must be at least 6 characters" }),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -42,65 +34,43 @@ const ResetPasswordForm = ({
   setIsLogin 
 }: ResetPasswordFormProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [otpVerified, setOtpVerified] = React.useState(false);
 
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      otp: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const verifyOTP = (enteredOTP: string) => {
-    const storedOTP = localStorage.getItem('resetOTP');
-    if (storedOTP && storedOTP === enteredOTP) {
-      setOtpVerified(true);
-      toast.success("Verification code confirmed");
-      return true;
-    } else {
-      toast.error("Invalid verification code");
-      return false;
-    }
-  };
-
   const onSubmit = async (values: z.infer<typeof resetPasswordSchema>) => {
     setIsLoading(true);
     
     try {
-      // First verify OTP if not already verified
-      if (!otpVerified) {
-        const isOtpValid = verifyOTP(values.otp);
-        if (!isOtpValid) {
-          setIsLoading(false);
-          return;
-        }
-      }
-      
-      // Update password
-      await saveUserCredentials({
-        email: resetEmail,
-        password: values.password,
+      // Use Supabase's updateUser to change password
+      const { error } = await supabase.auth.updateUser({
+        password: values.password
       });
-      
-      // Clear OTP from storage
-      localStorage.removeItem('resetOTP');
-      
-      toast.success("Password reset successfully");
-      toast.info("You can now log in with your new password");
-      
-      // Call onSuccess callback if provided
-      if (onSuccess) {
-        onSuccess();
-      }
-      
-      setTimeout(() => {
-        setIsResetPassword(false);
-        if (setIsLogin) {
-          setIsLogin(true);
+
+      if (error) {
+        toast.error("Failed to update password. Please try the reset process again.");
+        console.error('Password update error:', error);
+      } else {
+        toast.success("Password updated successfully!");
+        toast.info("You can now log in with your new password");
+        
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess();
         }
-      }, 1500);
+        
+        setTimeout(() => {
+          setIsResetPassword(false);
+          if (setIsLogin) {
+            setIsLogin(true);
+          }
+        }, 1500);
+      }
     } catch (error) {
       console.error('Reset password error:', error);
       toast.error("Failed to reset password");
@@ -113,34 +83,9 @@ const ResetPasswordForm = ({
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="otp"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Verification Code</FormLabel>
-                <FormControl>
-                  <div className="flex flex-col items-center space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Enter the 6-digit code sent to your email</span>
-                    </div>
-                    <InputOTP maxLength={6} {...field}>
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="mb-4 text-sm text-gray-600 text-center">
+            <p>Enter your new password for: <strong>{resetEmail}</strong></p>
+          </div>
 
           <FormFieldWithIcon
             form={form}
@@ -161,12 +106,8 @@ const ResetPasswordForm = ({
           />
           
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Processing..." : "Reset Password"}
+            {isLoading ? "Updating..." : "Update Password"}
           </Button>
-
-          <div className="mt-2 text-sm text-gray-500 text-center">
-            {!otpVerified && "Enter the verification code sent to your Gmail account to reset your password."}
-          </div>
         </form>
       </Form>
 
