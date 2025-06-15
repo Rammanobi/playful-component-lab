@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
 import FormFieldWithIcon from './FormFieldWithIcon';
+import DOMPurify from 'dompurify';
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -38,32 +38,30 @@ const ForgotPasswordForm = ({
 
   const onSubmit = async (values: z.infer<typeof forgotPasswordSchema>) => {
     setIsLoading(true);
-    
     try {
-      console.log('Sending password reset email:', values.email);
-      
-      // Use Supabase's built-in password reset functionality
-      const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
+      // Sanitize email
+      const email = DOMPurify.sanitize(values.email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/callback`,
       });
 
       if (error) {
         toast.error("Failed to send reset email. Please check if the email address is correct.");
-        console.error('Password reset error:', error);
+        if (process.env.NODE_ENV !== "production") {
+          console.error('Password reset error:', error);
+        }
       } else {
-        toast.success(`Password reset email sent to ${values.email}`);
+        toast.success(`Password reset email sent to ${email}`);
         toast.info("Please check your email for the reset link");
-        
-        // Store email for potential future use
-        setResetEmail(values.email);
-        
-        // Go back to login after successful request
+        setResetEmail(email);
         setTimeout(() => {
           setIsForgotPassword(false);
         }, 2000);
       }
     } catch (error) {
-      console.error('Forgot password error:', error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error('Forgot password error:', error);
+      }
       toast.error("Failed to process request");
     } finally {
       setIsLoading(false);

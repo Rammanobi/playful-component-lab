@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header';
 import { getAllLogs } from '@/lib/storage';
 import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 // Use dynamic import to avoid build error if file is missing
 let LogTabSection;
@@ -50,13 +51,27 @@ const LogDetails = () => {
       </div>
     );
   }
-
+  // Sanitize logs for display (defensive in case data from previous unsanitized entries):
   const props = {
-    sleepData: logs.sleepData,
-    mealData: logs.mealData,
-    stressLogs: logs.stressLogs,
+    sleepData: logs.sleepData.map(item => ({
+      ...item,
+      quality: DOMPurify.sanitize(item.quality),
+      morningReminder: DOMPurify.sanitize(item.morningReminder),
+    })),
+    mealData: logs.mealData.map(item => ({
+      ...item,
+      title: DOMPurify.sanitize(item.title),
+      description: DOMPurify.sanitize(item.description),
+    })),
+    stressLogs: logs.stressLogs.map(item => ({
+      ...item,
+      notes: DOMPurify.sanitize(item.notes),
+    })),
     skincareRoutines: logs.skincareRoutines,
-    dayDescriptions: logs.dayDescriptions,
+    dayDescriptions: logs.dayDescriptions.map(item => ({
+      ...item,
+      description: DOMPurify.sanitize(item.description),
+    })),
   };
 
   return (

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -17,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import DOMPurify from 'dompurify';
 
 export const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -39,10 +39,13 @@ const SupabaseLoginForm = ({ setIsForgotPassword }: { setIsForgotPassword: (valu
     setIsLoading(true);
     
     try {
+      // Sanitize inputs
+      values.email = DOMPurify.sanitize(values.email);
       await signIn(values.email, values.password);
     } catch (error) {
-      console.error('Authentication error:', error);
-      // Error is handled in signIn function
+      if (process.env.NODE_ENV !== "production") {
+        console.error('Authentication error:', error);
+      }
     } finally {
       setIsLoading(false);
     }

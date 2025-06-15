@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import {
 import FormFieldWithIcon from './FormFieldWithIcon';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
+import DOMPurify from 'dompurify';
 
 const registerFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -33,12 +33,17 @@ const RegisterForm = () => {
 
   const onSubmit = async (values: z.infer<typeof registerFormSchema>) => {
     setIsLoading(true);
-    
     try {
+      // Sanitize form input for fullName and email
+      values.fullName = DOMPurify.sanitize(values.fullName);
+      values.email = DOMPurify.sanitize(values.email);
       await signUp(values.email, values.password);
       // In a real app, we would store the full name in user metadata
     } catch (error) {
-      console.error('Registration error:', error);
+      // In production, avoid leaking error details in logs
+      if (process.env.NODE_ENV !== "production") {
+        console.error('Registration error:', error);
+      }
     } finally {
       setIsLoading(false);
     }

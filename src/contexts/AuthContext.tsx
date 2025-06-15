@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 
 type AuthContextType = {
   session: Session | null;
@@ -34,13 +34,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching profile:', error);
+        if (process.env.NODE_ENV !== "production") {
+          console.error('Error fetching profile:', error);
+        }
         return null;
+      }
+
+      // Sanitize output before entering state
+      if (data && data.full_name) {
+        data.full_name = DOMPurify.sanitize(data.full_name);
       }
 
       return data;
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error('Error fetching profile:', error);
+      }
       return null;
     }
   };

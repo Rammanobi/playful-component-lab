@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { toast } from 'sonner';
 import { UserCircle, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import DOMPurify from 'dompurify';
 
 const SupabaseUserProfile = () => {
   const navigate = useNavigate();
@@ -26,7 +26,9 @@ const SupabaseUserProfile = () => {
   // Get user initials for avatar fallback
   const getInitials = () => {
     if (profile?.full_name) {
-      return profile.full_name
+      // Sanitize output before displaying
+      const sanitized = DOMPurify.sanitize(profile.full_name);
+      return sanitized
         .split(' ')
         .map((n: string) => n[0])
         .join('')

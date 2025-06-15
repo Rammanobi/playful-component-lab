@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
@@ -9,6 +8,7 @@ import {
   DayDescription 
 } from "../types";
 import { getCurrentDate } from "../utils";
+import DOMPurify from 'dompurify';
 
 // Sleep data functions
 export const getSleepData = async (): Promise<SleepData[]> => {
@@ -29,12 +29,15 @@ export const getSleepData = async (): Promise<SleepData[]> => {
       timestamp: item.timestamp
     }));
   } catch (error) {
-    console.error('Error fetching sleep data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error fetching sleep data:', error);
+    }
     toast.error('Failed to load sleep data');
     return [];
   }
 };
 
+// Wherever we receive or save user text (description, notes, reminders), sanitize it before storing or returning
 export const saveSleepData = async (data: SleepData): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -45,15 +48,16 @@ export const saveSleepData = async (data: SleepData): Promise<void> => {
       .insert({
         user_id: user.id,
         hours_slept: data.hoursSlept,
-        quality: data.quality,
-        morning_reminder: data.morningReminder,
+        quality: DOMPurify.sanitize(data.quality),
+        morning_reminder: data.morningReminder ? DOMPurify.sanitize(data.morningReminder) : '',
         date: data.date,
         timestamp: new Date().toISOString()
       });
-    
     if (error) throw error;
   } catch (error) {
-    console.error('Error saving sleep data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error saving sleep data:', error);
+    }
     toast.error('Failed to save sleep data');
     throw error;
   }
@@ -65,15 +69,17 @@ export const updateSleepData = async (data: SleepData): Promise<void> => {
       .from('sleep_logs')
       .update({
         hours_slept: data.hoursSlept,
-        quality: data.quality,
-        morning_reminder: data.morningReminder,
+        quality: DOMPurify.sanitize(data.quality),
+        morning_reminder: data.morningReminder ? DOMPurify.sanitize(data.morningReminder) : '',
         timestamp: new Date().toISOString()
       })
       .eq('id', data.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error updating sleep data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error updating sleep data:', error);
+    }
     toast.error('Failed to update sleep data');
     throw error;
   }
@@ -88,7 +94,9 @@ export const deleteSleepData = async (id: string): Promise<void> => {
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting sleep data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error deleting sleep data:', error);
+    }
     toast.error('Failed to delete sleep data');
     throw error;
   }
@@ -113,31 +121,34 @@ export const getMealData = async (): Promise<MealData[]> => {
       timestamp: item.timestamp
     }));
   } catch (error) {
-    console.error('Error fetching meal data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error fetching meal data:', error);
+    }
     toast.error('Failed to load meal data');
     return [];
   }
 };
 
+// Example for saveMealData:
 export const saveMealData = async (data: MealData): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
-
     const { error } = await supabase
       .from('meal_logs')
       .insert({
         user_id: user.id,
-        title: data.title,
-        description: data.description,
+        title: DOMPurify.sanitize(data.title),
+        description: DOMPurify.sanitize(data.description),
         time: data.time,
         date: data.date,
         timestamp: new Date().toISOString()
       });
-    
     if (error) throw error;
   } catch (error) {
-    console.error('Error saving meal data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error saving meal data:', error);
+    }
     toast.error('Failed to save meal data');
     throw error;
   }
@@ -148,8 +159,8 @@ export const updateMealData = async (data: MealData): Promise<void> => {
     const { error } = await supabase
       .from('meal_logs')
       .update({
-        title: data.title,
-        description: data.description,
+        title: DOMPurify.sanitize(data.title),
+        description: DOMPurify.sanitize(data.description),
         time: data.time,
         timestamp: new Date().toISOString()
       })
@@ -157,7 +168,9 @@ export const updateMealData = async (data: MealData): Promise<void> => {
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error updating meal data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error updating meal data:', error);
+    }
     toast.error('Failed to update meal data');
     throw error;
   }
@@ -172,7 +185,9 @@ export const deleteMealData = async (id: string): Promise<void> => {
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting meal data:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error deleting meal data:', error);
+    }
     toast.error('Failed to delete meal data');
     throw error;
   }
@@ -196,7 +211,9 @@ export const getStressLogs = async (): Promise<StressLog[]> => {
       timestamp: item.timestamp
     }));
   } catch (error) {
-    console.error('Error fetching stress logs:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error fetching stress logs:', error);
+    }
     toast.error('Failed to load stress logs');
     return [];
   }
@@ -212,14 +229,16 @@ export const saveStressLog = async (data: StressLog): Promise<void> => {
       .insert({
         user_id: user.id,
         rating: data.rating,
-        notes: data.notes,
+        notes: DOMPurify.sanitize(data.notes),
         date: data.date,
         timestamp: new Date().toISOString()
       });
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error saving stress log:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error saving stress log:', error);
+    }
     toast.error('Failed to save stress log');
     throw error;
   }
@@ -231,14 +250,16 @@ export const updateStressLog = async (data: StressLog): Promise<void> => {
       .from('stress_logs')
       .update({
         rating: data.rating,
-        notes: data.notes,
+        notes: DOMPurify.sanitize(data.notes),
         timestamp: new Date().toISOString()
       })
       .eq('id', data.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error updating stress log:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error updating stress log:', error);
+    }
     toast.error('Failed to update stress log');
     throw error;
   }
@@ -253,7 +274,9 @@ export const deleteStressLog = async (id: string): Promise<void> => {
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting stress log:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error deleting stress log:', error);
+    }
     toast.error('Failed to delete stress log');
     throw error;
   }
@@ -280,7 +303,9 @@ export const getSkincareRoutines = async (): Promise<SkincareRoutine[]> => {
       timestamp: item.timestamp
     }));
   } catch (error) {
-    console.error('Error fetching skincare routines:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error fetching skincare routines:', error);
+    }
     toast.error('Failed to load skincare routines');
     return [];
   }
@@ -296,17 +321,19 @@ export const saveSkincareRoutine = async (data: SkincareRoutine): Promise<void> 
       .insert({
         user_id: user.id,
         reminder_time: data.reminderTime,
-        serum1: data.serum1,
-        serum2: data.serum2,
-        sunscreen: data.sunscreen,
-        moisturizer: data.moisturizer,
+        serum1: DOMPurify.sanitize(data.serum1),
+        serum2: DOMPurify.sanitize(data.serum2),
+        sunscreen: DOMPurify.sanitize(data.sunscreen),
+        moisturizer: DOMPurify.sanitize(data.moisturizer),
         date: data.date,
         timestamp: new Date().toISOString()
       });
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error saving skincare routine:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error saving skincare routine:', error);
+    }
     toast.error('Failed to save skincare routine');
     throw error;
   }
@@ -318,17 +345,19 @@ export const updateSkincareRoutine = async (data: SkincareRoutine): Promise<void
       .from('skincare_logs')
       .update({
         reminder_time: data.reminderTime,
-        serum1: data.serum1,
-        serum2: data.serum2,
-        sunscreen: data.sunscreen,
-        moisturizer: data.moisturizer,
+        serum1: DOMPurify.sanitize(data.serum1),
+        serum2: DOMPurify.sanitize(data.serum2),
+        sunscreen: DOMPurify.sanitize(data.sunscreen),
+        moisturizer: DOMPurify.sanitize(data.moisturizer),
         timestamp: new Date().toISOString()
       })
       .eq('id', data.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error updating skincare routine:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error updating skincare routine:', error);
+    }
     toast.error('Failed to update skincare routine');
     throw error;
   }
@@ -343,7 +372,9 @@ export const deleteSkincareRoutine = async (id: string): Promise<void> => {
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting skincare routine:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error deleting skincare routine:', error);
+    }
     toast.error('Failed to delete skincare routine');
     throw error;
   }
@@ -366,7 +397,9 @@ export const getDayDescriptions = async (): Promise<DayDescription[]> => {
       timestamp: item.timestamp
     }));
   } catch (error) {
-    console.error('Error fetching day descriptions:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error fetching day descriptions:', error);
+    }
     toast.error('Failed to load day descriptions');
     return [];
   }
@@ -381,14 +414,16 @@ export const saveDayDescription = async (data: DayDescription): Promise<void> =>
       .from('day_descriptions')
       .insert({
         user_id: user.id,
-        description: data.description,
+        description: DOMPurify.sanitize(data.description),
         date: data.date,
         timestamp: new Date().toISOString()
       });
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error saving day description:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error saving day description:', error);
+    }
     toast.error('Failed to save day description');
     throw error;
   }
@@ -399,14 +434,16 @@ export const updateDayDescription = async (data: DayDescription): Promise<void> 
     const { error } = await supabase
       .from('day_descriptions')
       .update({
-        description: data.description,
+        description: DOMPurify.sanitize(data.description),
         timestamp: new Date().toISOString()
       })
       .eq('id', data.id);
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error updating day description:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error updating day description:', error);
+    }
     toast.error('Failed to update day description');
     throw error;
   }
@@ -421,7 +458,9 @@ export const deleteDayDescription = async (id: string): Promise<void> => {
     
     if (error) throw error;
   } catch (error) {
-    console.error('Error deleting day description:', error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error('Error deleting day description:', error);
+    }
     toast.error('Failed to delete day description');
     throw error;
   }
