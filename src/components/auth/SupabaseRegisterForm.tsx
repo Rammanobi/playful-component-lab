@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -12,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 import DOMPurify from 'dompurify';
 import GoogleIcon from "./GoogleIcon";
+import { toast } from 'sonner';
 
 const registerFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -127,3 +129,4 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
+
