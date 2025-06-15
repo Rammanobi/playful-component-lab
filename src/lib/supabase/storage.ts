@@ -296,10 +296,10 @@ export const getSkincareRoutines = async (): Promise<SkincareRoutine[]> => {
       id: item.id,
       date: item.date,
       reminderTime: item.reminder_time,
-      serum1: item.serum1,
-      serum2: item.serum2,
-      sunscreen: item.sunscreen,
-      moisturizer: item.moisturizer,
+      serum1: Boolean(item.serum1),
+      serum2: Boolean(item.serum2),
+      sunscreen: Boolean(item.sunscreen),
+      moisturizer: Boolean(item.moisturizer),
       timestamp: item.timestamp
     }));
   } catch (error) {
@@ -321,10 +321,10 @@ export const saveSkincareRoutine = async (data: SkincareRoutine): Promise<void> 
       .insert({
         user_id: user.id,
         reminder_time: data.reminderTime,
-        serum1: DOMPurify.sanitize(data.serum1),
-        serum2: DOMPurify.sanitize(data.serum2),
-        sunscreen: DOMPurify.sanitize(data.sunscreen),
-        moisturizer: DOMPurify.sanitize(data.moisturizer),
+        serum1: data.serum1,
+        serum2: data.serum2,
+        sunscreen: data.sunscreen,
+        moisturizer: data.moisturizer,
         date: data.date,
         timestamp: new Date().toISOString()
       });
@@ -345,10 +345,10 @@ export const updateSkincareRoutine = async (data: SkincareRoutine): Promise<void
       .from('skincare_logs')
       .update({
         reminder_time: data.reminderTime,
-        serum1: DOMPurify.sanitize(data.serum1),
-        serum2: DOMPurify.sanitize(data.serum2),
-        sunscreen: DOMPurify.sanitize(data.sunscreen),
-        moisturizer: DOMPurify.sanitize(data.moisturizer),
+        serum1: data.serum1,
+        serum2: data.serum2,
+        sunscreen: data.sunscreen,
+        moisturizer: data.moisturizer,
         timestamp: new Date().toISOString()
       })
       .eq('id', data.id);
