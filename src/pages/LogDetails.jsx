@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import { getAllLogs } from '@/lib/storage';
 import { useEffect, useState } from 'react';
-import { Ring } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 
 // Use dynamic import to avoid build error if file is missing
 let LogTabSection;
@@ -37,7 +37,7 @@ const LogDetails = () => {
   if (isLoading) {
     return (
       <div className="app-container page-transition flex flex-col items-center justify-center">
-        <Ring className="h-12 w-12 animate-spin" />
+        <LoaderCircle className="h-12 w-12 animate-spin" />
         <p className="mt-4">Loading logs...</p>
       </div>
     );
