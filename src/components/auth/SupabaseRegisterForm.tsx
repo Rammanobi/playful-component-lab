@@ -21,7 +21,7 @@ const registerFormSchema = z.object({
   fullName: z.string().min(2, { message: "Please enter your full name" }),
 });
 
-const RegisterForm = () => {
+const SupabaseRegisterForm = () => {
   const { signUp, signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,5 +128,5 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default SupabaseRegisterForm;
 
